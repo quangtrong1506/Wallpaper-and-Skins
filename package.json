@@ -1,0 +1,62 @@
+{
+    "name": "live_screen",
+    "version": "1.0.0",
+    "description": "Live Wallpaper được tảo bởi Quang Trọng",
+    "main": "main.js",
+    "productName": "Live Wallpaper",
+    "scripts": {
+        "start": "electron .",
+        "dir": "electron-builder --dir",
+        "dist": "electron-builder"
+    },
+    "build": {
+        "appId": "15.06.2001",
+        "productName": "Live Wallpaper",
+        "copyright": "Copyright ©2023 QuangTrong",
+        "extraMetadata": {
+            "version": "1.0.2"
+        },
+        "directories": {
+            "buildResources": "resources",
+            "output": "dist/LiveScreen"
+        },
+        "mac": {
+            "category": "Screen"
+        },
+        "win": {
+            "target": "NSIS",
+            "icon": "icon.png"
+        },
+        "extraFiles": [
+            {
+                "from": "src/images/build/",
+                "to": "resources/images/",
+                "filter": [
+                    "**/*"
+                ]
+            }
+        ]
+    },
+    "keywords": [
+        "Screen",
+        "live screen"
+    ],
+    "author": "Quang Trọng",
+    "license": "CC0-1.0",
+    "devDependencies": {
+        "electron": "^22.0.0",
+        "electron-builder": "^23.6.0",
+        "electron-packager": "^17.1.1",
+        "i": "^0.3.7",
+        "install": "^0.13.0"
+    },
+    "dependencies": {
+        "brightness": "^3.0.0",
+        "child_process": "^1.0.2",
+        "lock-your-windows": "^0.0.2",
+        "node-cmd": "^5.0.0",
+        "node-gyp": "^9.3.1",
+        "npm": "^9.6.4",
+        "win-audio": "^2.0.2"
+    }
+}

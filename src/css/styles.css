@@ -1,0 +1,630 @@
+* {
+    box-sizing: border-box;
+    font-family: 'Patrick Hand', sans-serif;
+    user-select: none;
+}
+/* Font chính */
+@font-face {
+    font-family: 'Patrick Hand';
+    src: url('../fonts/PatrickHand-Regular.ttf');
+}
+@font-face {
+    font-family: 'Neonderthaw';
+    src: url('../fonts/Neonderthaw-Regular.ttf');
+}
+@font-face {
+    font-family: 'Passions Conflict';
+    src: url('../fonts/PassionsConflict-Regular.ttf');
+}
+@font-face {
+    font-family: 'Pacifico';
+    src: url('../fonts/Pacifico-Regular.ttf');
+}
+@font-face {
+    font-family: 'Alkatra';
+    src: url('../fonts/Alkatra-VariableFont_wght.ttf');
+}
+@font-face {
+    font-family: 'BebasNeue';
+    src: url('../fonts/BebasNeue-Regular.ttf');
+}
+/* Font cho đồng hồ */
+@font-face {
+    font-family: 'DeliciousHandrawn';
+    src: url('../fonts/DeliciousHandrawn-Regular.ttf');
+}
+/* width */
+::-webkit-scrollbar {
+    width: 3px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #fff;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+body {
+    margin: 0 auto;
+    overflow: hidden;
+}
+body .background .video {
+    display: flex;
+    align-content: center;
+    align-items: center;
+    max-height: 100vh;
+}
+body .background .video-bg {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+.blur {
+    z-index: 50;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+}
+.element-click {
+    position: fixed;
+    cursor: pointer;
+    /* border: 1px solid white; */
+    z-index: 10;
+    /* overflow: hidden; */
+}
+.extensions .calendar {
+    top: 39vh;
+    left: 4vw;
+    width: 90px;
+    height: 130px;
+    transition: all 0.2s linear;
+}
+.extensions .calendar .content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.extensions .calendar .content .body {
+    position: absolute;
+    width: 98%;
+    height: 98%;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    margin-top: 0.5%;
+    border-radius: 15px;
+    padding: 20px;
+}
+
+.extensions .calendar .content .body .month {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.extensions .calendar .content .body .month span {
+    font-family: 'Pacifico';
+    font-size: 34px;
+}
+.extensions .calendar .content .body .month button {
+    background-color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+}
+.extensions .calendar .content .body .month button:hover {
+    background-color: #b9e9fc;
+    color: white;
+}
+.extensions .calendar .content .body ul.days {
+    margin: 20px auto;
+    margin-bottom: 0;
+    padding: 0;
+    display: flex;
+    width: 80%;
+    font-size: 18px;
+}
+
+.extensions .calendar .content .body ul.days li {
+    list-style: none;
+    text-align: center;
+    width: calc(100% / 7);
+    font-family: 'Alkatra';
+    font-weight: 700;
+}
+
+.extensions .calendar .content .body ul.dates {
+    margin: 10px auto;
+    padding: 0;
+    display: flex;
+    width: 80%;
+    flex-wrap: wrap;
+}
+
+.extensions .calendar .content .body ul.dates li {
+    list-style: none;
+    width: calc(100% / 7);
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.extensions .calendar .content .body ul.dates li span {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    margin-top: 5px;
+    border-radius: 50%;
+    /* font-family: 'BebasNeue'; */
+    font-size: 22px;
+}
+.extensions .calendar .content .body ul.dates li.today span {
+    background-color: #0ea293;
+    color: white;
+}
+.extensions .calendar .content .body ul.dates li span:hover {
+    background-color: #dafcf8;
+}
+.extensions .calendar .content .body ul.dates li.today span:hover {
+    background-color: #0ea293;
+    color: white;
+}
+
+.extensions .calendar .content .footer {
+    position: absolute;
+    width: 300px;
+    left: 0;
+    right: 0;
+    bottom: -10px;
+    margin: 0 auto;
+}
+.extensions .calendar .background {
+    /* background-image: url('https://i.ibb.co/swQ0vH4/09c34bb9e55f26584c8ad55d3e8b89de.jpg'); */
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    background-size: contain;
+    opacity: 0.2;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.extensions .calendar.max {
+    position: fixed;
+    width: 60vw;
+    height: 500px;
+    top: calc((100vh - 500px) / 2);
+    left: 20vw;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+    cursor: default;
+    z-index: 100;
+    opacity: 1;
+}
+
+.extensions .calendar.min {
+    top: calc((100vh - 130px) / 2);
+    left: 4vw;
+    width: 90px;
+    height: 130px;
+    /* opacity: 0; */
+}
+.extensions .calendar.min .content {
+    display: none;
+    opacity: 0;
+}
+.extensions .calendar.max .content {
+    display: block;
+    opacity: 1;
+}
+
+.extensions .map {
+    top: 40vh;
+    width: 34px;
+    height: 34px;
+    right: 41vw;
+}
+.extensions .youtube {
+    top: 55vh;
+    width: 75px;
+    height: 52px;
+    left: 46vw;
+}
+
+.extensions .light-s {
+    top: 51vh;
+    width: 38px;
+    height: 34px;
+    left: 42vw;
+}
+.extensions .light-m {
+    top: 20vh;
+    width: 80px;
+    height: 50px;
+    left: 64vw;
+}
+
+.extensions .sky {
+    top: 0;
+    left: 32vh;
+    bottom: 8vh;
+    width: 265px;
+}
+.extensions .sky-s {
+    top: 10vh;
+    left: 35.5vw;
+    bottom: 32vh;
+    width: 67px;
+}
+.extensions .sky-s::after {
+    content: '';
+    position: absolute;
+    bottom: -33px;
+    width: 100px;
+    height: 49px;
+    right: 3px;
+    transform: rotate(321deg);
+}
+.extensions .sky .content,
+.extensions .sky .stair {
+    position: relative;
+}
+
+.extensions .stair .content ul,
+.extensions .sky .content ul {
+    margin: 0;
+    padding: 0;
+    background-color: white;
+    position: fixed;
+    width: 100px;
+    border-radius: 5px;
+    overflow: hidden;
+    z-index: 115;
+    transition: all 0.1s linear;
+}
+.extensions .stair .content ul li,
+.extensions .sky .content ul li {
+    list-style: none;
+    white-space: nowrap;
+    padding: 5px 10px;
+    display: inline-block;
+    width: 100%;
+    position: relative;
+}
+.extensions .stair .content ul li:hover,
+.extensions .sky .content ul li:hover {
+    background-color: #ecfaff;
+}
+
+.extensions .stair .content ul li.active,
+.extensions .sky .content ul li.active {
+    background-color: #159895;
+    color: white;
+}
+.extensions .stair.min .content ul,
+.extensions .sky.min .content ul {
+    display: none;
+    opacity: 0;
+}
+.extensions .stair.max .content ul,
+.extensions .sky.max .content ul {
+    display: block;
+    opacity: 1;
+}
+.extensions .stair.min .content .blur-sky,
+.extensions .sky.min .content .blur-sky {
+    display: none;
+}
+.extensions .stair .content ul {
+    width: 140px;
+}
+.extensions .stair .content ul li {
+    padding: 5px 50px 5px 10px;
+    width: 100%;
+    display: inline-block;
+}
+.extensions .stair .content ul span {
+    display: inline-block;
+    width: 100%;
+    white-space: nowrap;
+    padding: 5px 10px;
+    font-size: 18px;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+}
+.extensions .stair .content ul li::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    width: 90%;
+    height: 0.5px;
+    background-color: #b0daff;
+}
+.extensions .stair .content ul li:last-child:after {
+    display: none;
+}
+.extensions .change-audio,
+.extensions .change-brightness {
+    bottom: -10vh;
+    background-color: white;
+    border-radius: 8px;
+    width: 180px;
+    height: 40px;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    transition: all 0.2s linear;
+    z-index: 100;
+    position: fixed;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.269);
+    transition: all 0.2s ease-in-out;
+}
+.extensions .change-audio.active,
+.extensions .change-brightness.active {
+    bottom: 5vh;
+}
+.extensions .change-audio .unmute .bell-2 {
+    display: none;
+}
+.extensions .change-audio .muted .bell-1 {
+    display: none;
+}
+
+.extensions .tivi {
+    top: 40vh;
+    right: 1vw;
+    width: 108px;
+    height: 180px;
+}
+.extensions > div::after,
+.extensions > div::before {
+    /* border: 1px solid yellow; */
+}
+.extensions .tivi::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 0;
+    width: 100%;
+    height: 18px;
+    transform: rotate(-7deg);
+}
+.extensions .tivi::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 18px;
+    transform: rotate(15deg);
+}
+.extensions .laptop {
+    width: 33px;
+    height: 37px;
+    bottom: 17vh;
+    right: 34vw;
+}
+
+.extensions .laptop::after {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 5px;
+    right: 0;
+    bottom: -5px;
+}
+.extensions .stair {
+    width: 60px;
+    height: 70px;
+    right: 15.5vw;
+    bottom: 30vh;
+}
+
+.extensions .time {
+    left: 3vw;
+    top: 10vh;
+    width: 120px;
+    border-radius: 3px;
+}
+.extensions .time.max {
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    top: 25vh;
+    width: 50vw;
+    height: 50vh;
+    border-radius: 8px;
+    background-color: white;
+}
+.extensions .time.max:hover {
+    background-color: white;
+}
+.extensions .time:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.extensions .time .count-time {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+}
+.extensions .time .count-time > div {
+    font-family: 'DeliciousHandrawn';
+    font-size: 60px;
+    color: white;
+}
+.extensions .time .day {
+    font-size: 14px;
+    color: white;
+    width: 100%;
+    text-align: center;
+}
+.extensions .time .footer {
+    font-size: 14px;
+    color: white;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+.extensions .time.max .count-time > div,
+.extensions .time.max .footer,
+.extensions .time.max .day {
+    color: #333;
+}
+.extensions .stair::after {
+    content: '';
+    position: absolute;
+    width: 210px;
+    height: 75px;
+    top: 8px;
+    left: -90px;
+    transform: rotate(315deg);
+}
+.extensions .weather {
+    width: 220px;
+    top: 10vh;
+    left: calc(50vw - 110px);
+    border-radius: 5px;
+}
+.extensions .weather:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.extensions .weather .content .header {
+    display: flex;
+    justify-content: center;
+}
+.extensions .weather .content .header .temperature {
+    color: white;
+    font-size: 100px;
+    font-family: 'DeliciousHandrawn';
+    line-height: 70px;
+}
+.extensions .weather .content .middle {
+    width: 100%;
+    text-align: center;
+    color: white;
+    font-size: 18px;
+    margin-top: -15px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.extensions .weather .content .middle .description {
+    flex: 1;
+    display: inline-block;
+}
+.extensions .weather .content .footer {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+.extensions .weather .content .footer > div i {
+    margin-right: 5px;
+    color: white;
+    font-style: unset;
+}
+.extensions .weather .content .footer > div span {
+    color: white;
+}
+
+.slidecontainer {
+    width: 100%;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 3.5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: 0.2s;
+    transition: opacity 0.2s;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 8px;
+    height: 8px;
+    background: #323232;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+@media only screen and (min-height: 600px) {
+    .extensions .map {
+        top: 42vh;
+    }
+    .extensions .youtube {
+        top: 54vh;
+    }
+    .extensions .sky {
+        top: 4vh;
+        left: 14.5vw;
+        bottom: auto;
+        height: 82vh;
+    }
+    .extensions .light-m {
+        top: 25vh;
+    }
+    .extensions .sky-s {
+        top: 17vh;
+        left: 35.5vw;
+        bottom: auto;
+        width: 67px;
+        height: 340px;
+    }
+    .extensions .laptop {
+        bottom: 22vh;
+    }
+    .extensions .stair {
+        bottom: 34vh;
+    }
+}
+@media only screen and (min-height: 673px) {
+    .extensions .sky {
+        top: 7.2vh;
+        left: 14.5vw;
+        bottom: auto;
+        height: 76vh;
+    }
+    .extensions .light-m {
+        top: 26.5vh;
+    }
+    .extensions .sky-s {
+        top: 17vh;
+        left: 35.5vw;
+        bottom: auto;
+        width: 67px;
+        height: 340px;
+    }
+    .extensions .laptop {
+        bottom: 24vh;
+    }
+}

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"> -->
+    <title>Màn hình nền</title>
+    <link rel="stylesheet" href="./src/css/styles.css">
+    <link rel="stylesheet" href="./src/fontawesome-free-6.4.0-web/css/all.min.css">
+</head>
+
+<body>
+    <div class="main-room" style="display: block;">
+        <div class="background">
+            <div class="video">
+                <video class="video-bg" id="video" autoplay muted loop></video>
+            </div>
+        </div>
+        <div class="extensions">
+            <div class="calendar element-click min">
+                <div class="content">
+                    <div class="body">
+                        <div class="month">
+                            <button id="pre-month-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                            <span>
+                                <span id="text-month"></span>,
+                                <span id="text-year"></span>
+                            </span>
+                            <button id="next-month-btn"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                        <ul class="days">
+                            <li>H</li>
+                            <li>B</li>
+                            <li>T</li>
+                            <li>N</li>
+                            <li>S</li>
+                            <li>B</li>
+                            <li>CN</li>
+                        </ul>
+                        <ul id="dates" class="dates">
+                        </ul>
+                    </div>
+                    <div class="footer">
+                        <img src="./src/images/meo.png" width="100%">
+                    </div>
+
+                </div>
+            </div>
+            <div class="map element-click" onclick="window.open('https://www.google.com/maps')"></div>
+            <div class="youtube element-click" onclick="window.open('https://youtube.com')"></div>
+            <div class="sky element-click min" onmouseleave="onmouseleaveSky()">
+                <div class="content">
+                    <ul onmouseleave="onmouseleaveSky()">
+                        <li class="li-click" onclick="setTypeBackground('auto')">Tự động</li>
+                        <li class="li-click" onclick="setTypeBackground('day')">Trời sáng</li>
+                        <li class="li-click" onclick="setTypeBackground('night')">Trời tối</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="sky-s sky element-click min" onmouseleave="onmouseleaveSky()">
+                <div class="content">
+                    <ul onmouseleave="onmouseleaveSky()">
+                        <li class="li-click" onclick="setTypeBackground('auto')">Tự động</li>
+                        <li class="li-click" onclick="setTypeBackground('day')">Trời sáng</li>
+                        <li class="li-click" onclick="setTypeBackground('night')">Trời tối</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="light-s light element-click"></div>
+            <div class="light-m light element-click"></div>
+            <div class="change-brightness">
+                <img src="./src/images/sun.png" width="15" height="15" style="margin-left: 0; margin-right: 7px;">
+                <input style="flex: 1;" type="range" value="0" min="1" max="100" class="slider" id="brightness">
+            </div>
+            <div class="tivi element-click"></div>
+            <div class="change-audio ">
+                <div id="audio-bell" class="unmute"
+                    style="margin-left: 0; margin-right: 7px; width: 20px; overflow: hidden; text-align: center;">
+                    <i class="bell-1 fa-regular fa-bell"></i>
+                    <i class="bell-2 fa-regular fa-bell-slash"></i>
+                </div>
+                <input style="flex: 1;" type="range" min="1" max="50" value="0" class="slider" id="audio">
+            </div>
+            <div class="laptop element-click"></div>
+            <div class="stair element-click min">
+                <div class="content">
+                    <ul onmouseleave="onmouseleaveStair()">
+                        <span>Đi đến phòng</span>
+                        <li>Phòng ngủ</li>
+                        <li>Phòng chill</li>
+                        <li>Phòng x</li>
+                    </ul>
+                </div>
+            </div>
+            <div id="clock-mini" class="time element-click">
+                <div class="content">
+                    <div class="count-time">
+                        <div class="hours">00</div>
+                        <div>:</div>
+                        <div class="minutes">00</div>
+                    </div>
+                    <div class="day">Thứ hai</div>
+                    <div class="footer">
+                        <div class="date">
+                            <span>01/01</span>
+                        </div>
+                        <div class="battery">
+                            <span class="battery-icon"></span>
+                            <span class="present">99%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="weather" class="weather element-click">
+                <div class="content">
+                    <div class="header">
+                        <div class="icon">
+                            <img id="weather-icon" src="./src/images/weather/01d.png" alt="" srcset="" width="100px">
+                        </div>
+                        <div id="temperature" class="temperature">34°</div>
+                    </div>
+                    <div class="middle">
+                        <span id="description" class="description"></span>
+
+                    </div>
+                    <div class="footer">
+                        <div><i>UV</i><span id="uvi">0.5</span></div>
+                        <div>
+                            <i class="fa-solid fa-wind"></i>
+                            <span id="wind">0.5m/s</span>
+                        </div>
+                        <div>
+                            <i class="fa-solid fa-droplet"></i>
+                            <span id="humidity">60%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="blur" onclick="closeExtensions()" style="display: none;"></div>
+        </div>
+
+    </div>
+    <script src="./src/js/support.js"></script>
+    <script src="./src/js/main.js"></script>
+</body>
+
+</html>
