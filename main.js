@@ -11,7 +11,6 @@ const {
 } = require('electron');
 const path = require('path');
 const { AppUpdater, autoUpdater } = require('electron-updater');
-
 // biến toàn cục
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = true;

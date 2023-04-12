@@ -1,5 +1,4 @@
 const brightness = require('brightness');
-const { execSync } = require('child_process');
 const { ipcRenderer, contextBridge } = require('electron');
 const { speaker } = require('win-audio');
 const cmd = require('node-cmd');
@@ -41,11 +40,8 @@ const isLocked = () => {
     return lock;
 };
 const lockScreen = () => {
-    const winLockCommand = 'rundll32.exe user32.dll, LockWorkStation';
     try {
-        execSync(winLockCommand, { shell: true }, () => {
-            console.log('rundll32.exe');
-        });
+        cmd.run('C:/Windows/System32/rundll32.exe');
     } catch (e) {
         console.log('lỗi cái gì đó');
     }
