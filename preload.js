@@ -11,7 +11,9 @@ ipcRenderer.on('lock-screen', function (event, data) {
     else lock = false;
 });
 ipcRenderer.on('debug', function (event, data) {
-    console.log('main.js: ' + data.message);
+    if (data.type == 'error') console.error('main.js: ' + data.message);
+    else if (data.type == 'warn') console.warn('main.js: ' + data.message);
+    else console.log('main.js: ' + data.message);
 });
 const setBrightness = async function setBrightness(value) {
     value = value > 1 ? 1 : value < 0 ? 0 : value;

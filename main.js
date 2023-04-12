@@ -8,12 +8,14 @@ const {
     powerMonitor,
     Notification,
     ipcMain,
-    dialog,
-    autoUpdater,
 } = require('electron');
 const path = require('path');
+const { AppUpdater, autoUpdater } = require('electron-updater');
 
-autoUpdater.setFeedURL({ url });
+// biến toàn cục
+autoUpdater.autoDownload = false;
+autoUpdater.autoInstallOnAppQuit = true;
+
 let tray = null,
     mainWindow = null,
     heightScreen,
@@ -93,13 +95,30 @@ app.whenReady().then(() => {
     powerMonitor.on('unlock-screen', () => {
         mainWindow.webContents.send('lock-screen', false);
     });
-
-    setInterval(() => {
-        sendLog('name: ' + app.getName() + ' version: ' + app.getVersion());
-        autoUpdater.checkForUpdates();
-    }, 10000);
+    autoUpdater.checkForUpdates();
+    sendLog('check for updates');
+});
+/*New Update Available*/
+autoUpdater.on('update-available', (info) => {
+    sendLog(`Update available. Current version ${app.getVersion()}`);
+    let pth = autoUpdater.downloadUpdate();
+    sendLog(pth);
 });
 
+autoUpdater.on('update-not-available', (info) => {
+    sendLog(`No update available. Current version ${app.getVersion()}`);
+});
+
+/*Download Completion Message*/
+autoUpdater.on('update-downloaded', (info) => {
+    sendLog(`Update downloaded. Current version ${app.getVersion()}`);
+});
+
+autoUpdater.on('error', (info) => {
+    sendLog(info);
+});
+
+// log in javascript ?
 function showNotification(event, options) {
     new Notification({
         title: options.title,
@@ -108,20 +127,20 @@ function showNotification(event, options) {
         icon: 'resources/images/logo.ico',
     }).show();
 }
-autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
-    sendLog('Download');
-    const dialogOpts = {
-        type: 'info',
-        buttons: ['Restart', 'Later'],
-        title: 'Application Update',
-        message: process.platform === 'win32' ? releaseNotes : releaseName,
-        detail: 'A new version has been downloaded. Restart the application to apply the updates.',
-    };
+// autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+//     sendLog('Download');
+//     const dialogOpts = {
+//         type: 'info',
+//         buttons: ['Restart', 'Later'],
+//         title: 'Application Update',
+//         message: process.platform === 'win32' ? releaseNotes : releaseName,
+//         detail: 'A new version has been downloaded. Restart the application to apply the updates.',
+//     };
 
-    dialog.showMessageBox(dialogOpts).then((returnValue) => {
-        if (returnValue.response === 0) autoUpdater.quitAndInstall();
-    });
-});
+//     dialog.showMessageBox(dialogOpts).then((returnValue) => {
+//         if (returnValue.response === 0) autoUpdater.quitAndInstall();
+//     });
+// });
 app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit();
 });

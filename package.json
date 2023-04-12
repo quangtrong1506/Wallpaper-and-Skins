@@ -1,7 +1,7 @@
 {
     "name": "live_screen",
-    "version": "1.0.7",
-    "description": "Live Wallpaper được tảo bởi Quang Trọng",
+    "version": "1.0.5",
+    "description": "Live Wallpaper được tạo bởi Quang Trọng",
     "main": "main.js",
     "productName": "Live Wallpaper",
     "scripts": {
@@ -40,8 +40,10 @@
     ],
     "author": "Quang Trọng",
     "license": "CC0-1.0",
-    "repository": {
-        "url": "https://github.com/quangtrong1506/wallpaper-app"
+    "repository": "https://github.com/quangtrong1506/wallpaper-app",
+    "publish": {
+        "provider": "github",
+        "releaseType": "release"
     },
     "devDependencies": {
         "electron": "^22.0.0",
