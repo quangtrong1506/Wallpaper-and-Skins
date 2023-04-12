@@ -360,15 +360,10 @@ function chargingChange() {
                 'Pin đầy',
                 'Pin của bạn đã được sạc đầy vui lòng rút sạc để bảo vệ pin'
             );
-        if (batteryChargingTime != 'Infinity')
+        if (batteryChargingTime != 'Infinity' && batteryCharging)
             sendNotification(
                 'Thời gian sạc',
                 'Pin của bạn sẽ được sạc đầy sau ' + batteryChargingTime + ' phút'
-            );
-        if (batteryDischargingTime != 'Infinity')
-            sendNotification(
-                'Thời gian dùng',
-                'Thiết bị của bạn sẽ dùng được trong ' + batteryChargingTime + ' phút'
             );
     });
 }

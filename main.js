@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const {
     app,
     BrowserWindow,
@@ -9,48 +8,37 @@ const {
     powerMonitor,
     Notification,
     ipcMain,
+    autoUpdater,
+    dialog,
 } = require('electron');
 const path = require('path');
 
+const server = 'https://download-wallpaper-i5f5awuy8-quangtrong1506.vercel.app';
+const url = `${server}/update/${process.platform}/${app.getVersion()}`;
+autoUpdater.setFeedURL({ url });
 let tray = null,
     mainWindow = null,
     heightScreen,
     widthScreen;
-=======
-const { app, BrowserWindow, screen, globalShortcut, Tray, Menu, shell } = require('electron');
-const path = require('path');
-const { off } = require('process');
-let tray = null,
-    mainWindow = null;
-
->>>>>>> 192bd5eb993b5f3fd24bbd9546f0ad99936ba406
 function createWindow() {
     // Create the browser window.
     mainWindow = new BrowserWindow({
         width: 1300,
         height: 900,
-<<<<<<< HEAD
         title: 'Live Wallpaper',
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: true,
             contextIsolation: true,
             enableRemoteModule: false,
-=======
-        webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
->>>>>>> 192bd5eb993b5f3fd24bbd9546f0ad99936ba406
         },
         minimizable: false,
         resizable: true,
         frame: false,
         x: 0,
         y: 0,
-<<<<<<< HEAD
         // icon: path.join(__dirname, './resources/app/logo.ico'),
         icon: path.join(__dirname, './src/images/logo.ico'),
-=======
->>>>>>> 192bd5eb993b5f3fd24bbd9546f0ad99936ba406
     });
 
     // and load the index.html of the app.
@@ -64,7 +52,6 @@ function createWindow() {
     // bỏ qua taskbar
     mainWindow.setSkipTaskbar(true);
 
-<<<<<<< HEAD
     // mainWindow.webContents.openDevTools();
 
     // Tray icon
@@ -75,21 +62,10 @@ function createWindow() {
     let contextMenu = Menu.buildFromTemplate(trayMenu());
     tray.setContextMenu(contextMenu);
     tray.setToolTip('Màn hình nền');
-=======
-    mainWindow.webContents.openDevTools();
-
-    // Tray icon
-    tray = new Tray('./src/images/logo.ico');
-    let contextMenu = Menu.buildFromTemplate(trayMenu());
-    tray.setContextMenu(contextMenu);
-    tray.setToolTip('Màn hình nền tự build');
-
->>>>>>> 192bd5eb993b5f3fd24bbd9546f0ad99936ba406
     tray.on('click', () => {
         mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
         mainWindow.blur();
     });
-<<<<<<< HEAD
     mainWindow.webContents.setWindowOpenHandler((link) => {
         return shell.openExternal(link.url);
     });
@@ -173,47 +149,3 @@ function createNewWindow(url) {
         shell.openExternal(url);
     });
 }
-=======
-}
-
-function trayMenu() {
-    var text = mainWindow.isVisible() ? 'Ẩn hình nền' : 'Hiện hình nền';
-    let innerMenu = [
-        {
-            label: 'Dừng',
-            click: () => {
-                app.quit();
-            },
-        },
-        {
-            label: text,
-            click: () => {
-                mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
-                mainWindow.blur();
-
-                let contextMenu = Menu.buildFromTemplate(trayMenu());
-                tray.setContextMenu(contextMenu);
-            },
-        },
-        {
-            label: 'Liên hệ',
-            click: () => {
-                shell.openExternal('https://www.facebook.com/quangtrong.1506');
-            },
-        },
-    ];
-    return innerMenu;
-}
-
-app.whenReady().then(() => {
-    createWindow();
-
-    app.on('activate', function () {
-        if (BrowserWindow.getAllWindows().length === 0) createWindow();
-    });
-});
-
-app.on('window-all-closed', function () {
-    if (process.platform !== 'darwin') app.quit();
-});
->>>>>>> 192bd5eb993b5f3fd24bbd9546f0ad99936ba406

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const brightness = require('brightness');
 const { execSync } = require('child_process');
 const { ipcRenderer, contextBridge } = require('electron');
@@ -75,8 +74,4 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getBrightness: getBrightness,
     getAudio: getAudio,
     isLocked: isLocked,
-=======
-window.addEventListener('DOMContentLoaded', () => {
-    console.log('Connected');
->>>>>>> 192bd5eb993b5f3fd24bbd9546f0ad99936ba406
 });
