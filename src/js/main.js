@@ -138,7 +138,7 @@ window.onload = function () {
     });
     // khóa màn hình
     document.body.addEventListener('dblclick', () => {
-        window.electronAPI.lockScreen();
+        window.electronAPI.openInCMD('C:/Windows/System32/rundll32.exe user32.dll,LockWorkStation');
     });
     // ấn vào chuông
     document.getElementById('audio-bell').addEventListener('click', () => {
@@ -157,7 +157,7 @@ window.onload = function () {
     });
     // ấn vào laptop
     document.querySelector('.extensions .laptop').addEventListener('click', () => {
-        window.electronAPI.turnOfWindows();
+        window.electronAPI.openInCMD('C:/Windows/System32/SlideToShutDown.exe');
     });
     document.getElementById('audio').addEventListener('input', (event) => {
         let audio = event.target.value;
@@ -198,7 +198,6 @@ window.onload = function () {
         document.getElementById('brightness').value = brightnessLevel * 100;
         let mute = await window.electronAPI.isMuted();
         let audio = await window.electronAPI.getAudio();
-
         if (mute) {
             document.getElementById('audio-bell').classList.remove('unmute');
             document.getElementById('audio-bell').classList.add('muted');

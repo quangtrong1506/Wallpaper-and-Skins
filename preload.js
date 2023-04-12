@@ -1,7 +1,6 @@
 const brightness = require('brightness');
 const { ipcRenderer, contextBridge } = require('electron');
 const { speaker } = require('win-audio');
-const cmd = require('node-cmd');
 
 // nhận dữ liệu khi khóa màn hình
 var lock = false;
@@ -39,13 +38,9 @@ const isMuted = () => {
 const isLocked = () => {
     return lock;
 };
-const lockScreen = () => {
-    try {
-        cmd.run('C:/Windows/System32/rundll32.exe');
-    } catch (e) {
-        console.log('lỗi cái gì đó');
-    }
-};
+// const lockScreen = () => {
+//     cmd.run('C:/Windows/System32/rundll32.exe');
+// };
 
 const setMute = (value) => {
     if (value) speaker.mute();
@@ -59,18 +54,17 @@ const setAudio = async (value) => {
     }
 };
 
-const turnOfWindows = () => {
-    cmd.run('C:/Windows/System32/SlideToShutDown.exe');
-};
+// const turnOfWindows = () => {
+//     cmd.run('C:/Windows/System32/SlideToShutDown.exe');
+// };
 
 contextBridge.exposeInMainWorld('electronAPI', {
     setTitle: (options) => ipcRenderer.send('set-notification', options),
+    openInCMD: (path) => ipcRenderer.send('open-in-cmd', path),
     setBrightness: setBrightness,
     isMuted: isMuted,
-    lockScreen: lockScreen,
     setMute: setMute,
     setAudio: setAudio,
-    turnOfWindows: turnOfWindows,
     getBrightness: getBrightness,
     getAudio: getAudio,
     isLocked: isLocked,

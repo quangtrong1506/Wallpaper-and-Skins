@@ -10,7 +10,11 @@ const {
     ipcMain,
 } = require('electron');
 const path = require('path');
-const { AppUpdater, autoUpdater } = require('electron-updater');
+const { autoUpdater } = require('electron-updater');
+
+const cmd = require('node-cmd');
+const isDev = require('electron-is-dev');
+
 // biến toàn cục
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = true;
@@ -20,7 +24,6 @@ let tray = null,
     heightScreen,
     widthScreen;
 function createWindow() {
-    // Create the browser window.
     mainWindow = new BrowserWindow({
         width: 1300,
         height: 900,
@@ -36,28 +39,16 @@ function createWindow() {
         frame: false,
         x: 0,
         y: 0,
-        // icon: path.join(__dirname, './resources/app/logo.ico'),
         icon: path.join(__dirname, './src/images/logo.ico'),
     });
-
-    // and load the index.html of the app.
     mainWindow.loadFile('index.html');
-    // cho nó xuống dưới
     mainWindow.blur();
-    //xóa menu mặc định
     mainWindow.removeMenu();
-    // Max size
     mainWindow.maximize();
-    // bỏ qua taskbar
     mainWindow.setSkipTaskbar(true);
-
-    mainWindow.webContents.openDevTools();
-
-    // Tray icon
-    // tray = new Tray('./src/images/logo.ico');
-
-    // build
-    tray = new Tray('resources/images/logo.ico');
+    if (isDev) mainWindow.webContents.openDevTools();
+    if (isDev) tray = new Tray('./src/images/logo.ico');
+    else tray = new Tray('resources/images/logo.ico');
     let contextMenu = Menu.buildFromTemplate(trayMenu());
     tray.setContextMenu(contextMenu);
     tray.setToolTip('Màn hình nền');
@@ -73,6 +64,7 @@ function createWindow() {
 const singleInstanceLock = app.requestSingleInstanceLock();
 app.whenReady().then(() => {
     ipcMain.on('set-notification', showNotification);
+    ipcMain.on('open-in-cmd', OpenInCMD);
     createWindow();
     const primaryDisplay = screen.getPrimaryDisplay();
     const { width, height } = primaryDisplay.workAreaSize;
@@ -95,26 +87,29 @@ app.whenReady().then(() => {
         mainWindow.webContents.send('lock-screen', false);
     });
     autoUpdater.checkForUpdates();
-    sendLog('check for updates');
+    setInterval(() => autoUpdater.checkForUpdates(), 5 * 60 * 1000);
 });
+
+app.setLoginItemSettings({
+    openAtLogin: true,
+});
+
 /*New Update Available*/
 autoUpdater.on('update-available', (info) => {
     sendLog(`Update available. Current version ${app.getVersion()}`);
-    let pth = autoUpdater.downloadUpdate();
-    sendLog(pth);
-});
-
-autoUpdater.on('update-not-available', (info) => {
-    sendLog(`No update available. Current version ${app.getVersion()}`);
+    autoUpdater.downloadUpdate();
 });
 
 /*Download Completion Message*/
-autoUpdater.on('update-downloaded', (info) => {
-    sendLog(`Update downloaded. Current version ${app.getVersion()}`);
-});
 
 autoUpdater.on('error', (info) => {
-    sendLog(info);
+    sendLog(info, 'error');
+});
+autoUpdater.on('update-downloaded', () => {
+    showNotification(null, {
+        title: 'Cập nhật thành công',
+        body: 'Khởi động lại ứng dụng để áp dụng các bản cập nhật',
+    });
 });
 
 // log in javascript ?
@@ -124,22 +119,10 @@ function showNotification(event, options) {
         body: options.body,
         timeoutType: 'default',
         icon: 'resources/images/logo.ico',
+        actions: [],
     }).show();
 }
-// autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
-//     sendLog('Download');
-//     const dialogOpts = {
-//         type: 'info',
-//         buttons: ['Restart', 'Later'],
-//         title: 'Application Update',
-//         message: process.platform === 'win32' ? releaseNotes : releaseName,
-//         detail: 'A new version has been downloaded. Restart the application to apply the updates.',
-//     };
 
-//     dialog.showMessageBox(dialogOpts).then((returnValue) => {
-//         if (returnValue.response === 0) autoUpdater.quitAndInstall();
-//     });
-// });
 app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit();
 });
@@ -162,7 +145,7 @@ function trayMenu() {
     return innerMenu;
 }
 
-function createNewWindow(url) {
+function createNewWindow(url, icon = 'resources/images/logo.ico') {
     win = new BrowserWindow({
         width: widthScreen,
         height: heightScreen,
@@ -170,7 +153,7 @@ function createNewWindow(url) {
         frame: true,
         x: 0,
         y: 0,
-        icon: path.join(__dirname, './logo.ico'),
+        icon: path.join(__dirname, icon),
     });
 
     // and load the link of the app.
@@ -187,4 +170,9 @@ function createNewWindow(url) {
 
 function sendLog(message, type) {
     mainWindow.webContents.send('debug', { message: message, type: type });
+}
+
+function OpenInCMD(event, path) {
+    sendLog('Path: ' + path);
+    cmd.run(path);
 }
