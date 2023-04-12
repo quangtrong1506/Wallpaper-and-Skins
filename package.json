@@ -13,9 +13,6 @@
         "appId": "15.06.2001",
         "productName": "Live Wallpaper",
         "copyright": "Copyright ©2023 QuangTrong",
-        "extraMetadata": {
-            "version": "1.0.2"
-        },
         "directories": {
             "buildResources": "resources",
             "output": "dist/LiveScreen"
@@ -43,6 +40,9 @@
     ],
     "author": "Quang Trọng",
     "license": "CC0-1.0",
+    "repository": {
+        "url": "https://github.com/quangtrong1506/wallpaper-app"
+    },
     "devDependencies": {
         "electron": "^22.0.0",
         "electron-builder": "^23.6.0",
@@ -53,6 +53,7 @@
     "dependencies": {
         "brightness": "^3.0.0",
         "child_process": "^1.0.2",
+        "electron-updater": "^5.3.0",
         "lock-your-windows": "^0.0.2",
         "node-cmd": "^5.0.0",
         "node-gyp": "^9.3.1",

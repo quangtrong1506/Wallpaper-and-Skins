@@ -8,13 +8,11 @@ const {
     powerMonitor,
     Notification,
     ipcMain,
-    autoUpdater,
     dialog,
+    autoUpdater,
 } = require('electron');
 const path = require('path');
 
-const server = 'https://download-wallpaper-i5f5awuy8-quangtrong1506.vercel.app';
-const url = `${server}/update/${process.platform}/${app.getVersion()}`;
 autoUpdater.setFeedURL({ url });
 let tray = null,
     mainWindow = null,
@@ -52,13 +50,13 @@ function createWindow() {
     // bỏ qua taskbar
     mainWindow.setSkipTaskbar(true);
 
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     // Tray icon
-    // tray = new Tray('./src/images/logo.ico');
+    tray = new Tray('./src/images/logo.ico');
 
     // build
-    tray = new Tray('resources/images/logo.ico');
+    // tray = new Tray('resources/images/logo.ico');
     let contextMenu = Menu.buildFromTemplate(trayMenu());
     tray.setContextMenu(contextMenu);
     tray.setToolTip('Màn hình nền');
@@ -69,24 +67,6 @@ function createWindow() {
     mainWindow.webContents.setWindowOpenHandler((link) => {
         return shell.openExternal(link.url);
     });
-}
-
-function trayMenu() {
-    let innerMenu = [
-        {
-            label: 'Dừng',
-            click: () => {
-                app.quit();
-            },
-        },
-        {
-            label: 'Liên hệ',
-            click: () => {
-                shell.openExternal('https://www.facebook.com/quangtrong.1506');
-            },
-        },
-    ];
-    return innerMenu;
 }
 
 const singleInstanceLock = app.requestSingleInstanceLock();
@@ -113,6 +93,11 @@ app.whenReady().then(() => {
     powerMonitor.on('unlock-screen', () => {
         mainWindow.webContents.send('lock-screen', false);
     });
+
+    setInterval(() => {
+        sendLog('name: ' + app.getName() + ' version: ' + app.getVersion());
+        autoUpdater.checkForUpdates();
+    }, 10000);
 });
 
 function showNotification(event, options) {
@@ -123,9 +108,41 @@ function showNotification(event, options) {
         icon: 'resources/images/logo.ico',
     }).show();
 }
+autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+    sendLog('Download');
+    const dialogOpts = {
+        type: 'info',
+        buttons: ['Restart', 'Later'],
+        title: 'Application Update',
+        message: process.platform === 'win32' ? releaseNotes : releaseName,
+        detail: 'A new version has been downloaded. Restart the application to apply the updates.',
+    };
+
+    dialog.showMessageBox(dialogOpts).then((returnValue) => {
+        if (returnValue.response === 0) autoUpdater.quitAndInstall();
+    });
+});
 app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit();
 });
+
+function trayMenu() {
+    let innerMenu = [
+        {
+            label: 'Dừng',
+            click: () => {
+                app.quit();
+            },
+        },
+        {
+            label: 'Liên hệ',
+            click: () => {
+                shell.openExternal('https://www.facebook.com/quangtrong.1506');
+            },
+        },
+    ];
+    return innerMenu;
+}
 
 function createNewWindow(url) {
     win = new BrowserWindow({
@@ -148,4 +165,8 @@ function createNewWindow(url) {
         e.preventDefault();
         shell.openExternal(url);
     });
+}
+
+function sendLog(message, type) {
+    mainWindow.webContents.send('debug', { message: message, type: type });
 }
