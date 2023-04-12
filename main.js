@@ -55,10 +55,10 @@ function createWindow() {
     mainWindow.webContents.openDevTools();
 
     // Tray icon
-    tray = new Tray('./src/images/logo.ico');
+    // tray = new Tray('./src/images/logo.ico');
 
     // build
-    // tray = new Tray('resources/images/logo.ico');
+    tray = new Tray('resources/images/logo.ico');
     let contextMenu = Menu.buildFromTemplate(trayMenu());
     tray.setContextMenu(contextMenu);
     tray.setToolTip('Màn hình nền');
