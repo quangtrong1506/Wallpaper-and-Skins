@@ -5,7 +5,9 @@ Quang Trọng
 ### Hướng dẫn sử dụng
 
 - Màn hình chính
-<img src="https://i.ibb.co/NSkVBv1/nh1.png" alt="" style="width:100%;"/>
+
+![https://i.ibb.co/NSkVBv1/nh1.png](https://i.ibb.co/NSkVBv1/nh1.png "MarineGEO logo")
+
 
 1. Đồng hồ thời gian thực ( có thể thay đổi vị trí)
 2. Thay đổi nền ngày và đêm
