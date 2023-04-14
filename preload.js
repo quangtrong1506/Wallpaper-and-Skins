@@ -1,18 +1,22 @@
-const brightness = require('brightness');
 const { ipcRenderer, contextBridge } = require('electron');
+const brightness = require('brightness');
 const { speaker } = require('win-audio');
+const cmd = require('node-cmd');
 
 // nhận dữ liệu khi khóa màn hình
 var lock = false;
 ipcRenderer.on('lock-screen', function (event, data) {
+    console.log('lock');
     if (data) lock = true;
     else lock = false;
 });
+
 ipcRenderer.on('debug', function (event, data) {
     if (data.type == 'error') console.error('main.js: ' + data.message);
     else if (data.type == 'warn') console.warn('main.js: ' + data.message);
     else console.log('main.js: ' + data.message);
 });
+
 const setBrightness = async function setBrightness(value) {
     value = value > 1 ? 1 : value < 0 ? 0 : value;
     await brightness
@@ -21,26 +25,9 @@ const setBrightness = async function setBrightness(value) {
             console.log('Changed brightness to ' + value);
         })
         .catch(() => {
-            alert('Lỗi thay đổi độ sáng màn hình');
+            console.log('Lỗi thay đổi độ sáng màn hình', 'error');
         });
 };
-const getBrightness = async () => {
-    var level = await brightness.get();
-    return level;
-};
-const getAudio = async () => {
-    var level = await speaker.get();
-    return level;
-};
-const isMuted = () => {
-    return speaker.isMuted();
-};
-const isLocked = () => {
-    return lock;
-};
-// const lockScreen = () => {
-//     cmd.run('C:/Windows/System32/rundll32.exe');
-// };
 
 const setMute = (value) => {
     if (value) speaker.mute();
@@ -50,22 +37,40 @@ const setAudio = async (value) => {
     try {
         speaker.set(value);
     } catch (e) {
-        alert('Lỗi chỉnh âm lượng');
+        sendLog('Lỗi chỉnh âm lượng');
     }
 };
-
-// const turnOfWindows = () => {
-//     cmd.run('C:/Windows/System32/SlideToShutDown.exe');
-// };
-
 contextBridge.exposeInMainWorld('electronAPI', {
     setTitle: (options) => ipcRenderer.send('set-notification', options),
-    openInCMD: (path) => ipcRenderer.send('open-in-cmd', path),
     setBrightness: setBrightness,
-    isMuted: isMuted,
     setMute: setMute,
     setAudio: setAudio,
-    getBrightness: getBrightness,
-    getAudio: getAudio,
-    isLocked: isLocked,
+    isLocked: () => {
+        return lock;
+    },
+    openInCMD: OpenInCMD,
+    getDataSystem: getDataSystem,
+    isMuted: isMuted,
+    quitApp: () => ipcRenderer.send('quit-app'),
 });
+
+async function getDataSystem() {
+    let audio = await speaker.get();
+    let mute = await speaker.isMuted();
+    if (mute) {
+        document.getElementById('audio-bell').classList.remove('unmute');
+        document.getElementById('audio-bell').classList.add('muted');
+    } else {
+        document.getElementById('audio-bell').classList.add('unmute');
+        document.getElementById('audio-bell').classList.remove('muted');
+    }
+    document.getElementById('audio').value = audio / 2;
+}
+function isMuted() {
+    return speaker.isMuted();
+}
+setInterval(getDataSystem, 1000);
+function OpenInCMD(path) {
+    console.log('cmd: ' + path);
+    cmd.run(path);
+}

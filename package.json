@@ -1,6 +1,6 @@
 {
     "name": "live_screen",
-    "version": "1.0.10",
+    "version": "1.0.1",
     "description": "Live Wallpaper được tạo bởi Quang Trọng",
     "main": "main.js",
     "productName": "Live Wallpaper",
@@ -54,7 +54,6 @@
     },
     "dependencies": {
         "brightness": "^3.0.0",
-        "child_process": "^1.0.2",
         "electron-is-dev": "^2.0.0",
         "electron-updater": "^5.3.0",
         "node-cmd": "^5.0.0",

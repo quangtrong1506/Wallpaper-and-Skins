@@ -1,5 +1,9 @@
 // tên hàm của 1 số setTime...
-var closeBrightness, closeAudio;
+
+var closeBrightness,
+    closeAudio,
+    canPlayVideoBackground = true,
+    temp = {};
 
 var calendar = {
     today: new Date(),
@@ -20,6 +24,7 @@ var calendar = {
         calendar.year = day.getFullYear();
     },
 };
+
 var background = {
     type: 'auto',
     day: 6,
@@ -27,6 +32,11 @@ var background = {
 };
 var weather = localStorage.getItem('weather') ? JSON.parse(localStorage.getItem('weather')) : {};
 
+var defaultData = {
+    lat: '21.0278',
+    lon: '105.8342',
+    cityName: 'Thành phố Hà Nội',
+};
 window.onload = function () {
     // ? get dữ liệu
     getLocalData();
@@ -69,6 +79,21 @@ window.onload = function () {
     //? ấn vào trời
     document.querySelectorAll('.extensions .sky').forEach((elmt) => {
         elmt.addEventListener('click', (event) => {
+            if (elmt.classList.contains('min')) {
+                elmt.classList.add('max');
+                elmt.classList.remove('min');
+            }
+            document.querySelectorAll('.extensions .sky .content ul').forEach((element) => {
+                let li = element.childNodes;
+                li.forEach((elmt) => {
+                    elmt.classList = 'li-class';
+                });
+                if (background.type == 'auto') li[1].className = 'active';
+                if (background.type == 'day') li[3].className = 'active';
+                if (background.type == 'night') li[5].className = 'active';
+            });
+        });
+        elmt.addEventListener('mousedown', (event) => {
             if (elmt.classList.contains('min')) {
                 elmt.classList.add('max');
                 elmt.classList.remove('min');
@@ -137,8 +162,11 @@ window.onload = function () {
         window.electronAPI.setAudio(audio / 100);
     });
     // khóa màn hình
-    document.body.addEventListener('dblclick', () => {
-        window.electronAPI.openInCMD('C:/Windows/System32/rundll32.exe user32.dll,LockWorkStation');
+    document.body.addEventListener('dblclick', (e) => {
+        if (e.target.classList.contains('video-bg'))
+            window.electronAPI.openInCMD(
+                'C:/Windows/System32/rundll32.exe user32.dll,LockWorkStation'
+            );
     });
     // ấn vào chuông
     document.getElementById('audio-bell').addEventListener('click', () => {
@@ -176,8 +204,6 @@ window.onload = function () {
             });
         }
     });
-    // set thời gian cho đồng hồ treo tường
-    setInterval(setTimeInScreen, 1000);
 
     let position = localStorage.getItem('position-extensions');
     if (position) {
@@ -188,44 +214,69 @@ window.onload = function () {
             element.style.left = elmt.left + 'px';
         });
     }
+    getWeather();
     setWeatherInScreen();
     setTimeInScreen();
+    setInterval(setTimeInScreen, 1000);
+    setInterval(setVideoBackground, 1000);
     setInterval(setWeatherInScreen, 5 * 60 * 1000);
     dragElement('clock-mini');
     dragElement('weather');
-    setInterval(async () => {
-        let brightnessLevel = await window.electronAPI.getBrightness();
-        document.getElementById('brightness').value = brightnessLevel * 100;
-        let mute = await window.electronAPI.isMuted();
-        let audio = await window.electronAPI.getAudio();
-        if (mute) {
-            document.getElementById('audio-bell').classList.remove('unmute');
-            document.getElementById('audio-bell').classList.add('muted');
-        } else {
-            document.getElementById('audio-bell').classList.add('unmute');
-            document.getElementById('audio-bell').classList.remove('muted');
-        }
-        document.getElementById('audio').value = audio / 2;
-    }, 1000);
-
     var videoPlay = true;
     setInterval(async () => {
+        if (!window.electronAPI) return;
         var lock = await window.electronAPI.isLocked();
         if (lock == videoPlay) {
             videoPlay = !videoPlay;
         } else {
             if (lock) document.getElementById('video').pause();
-            else if (document.getElementById('video').paused)
+            else if (document.getElementById('video').paused && canPlayVideoBackground)
                 document.getElementById('video').play();
         }
     }, 1000);
+    document.getElementById('weather').addEventListener('click', setWeatherInScreen);
+    document.getElementById('weather').addEventListener('mousedown', (e) => {
+        if (e.button == 2) changeGeo();
+    });
+    document.querySelector('.background').addEventListener('mousedown', (e) => {
+        if (e.button == 2) {
+            e.preventDefault();
+            document.querySelector('.right-mouse-click').style.top = e.y - 5 + 'px';
+            document.querySelector('.right-mouse-click').style.left = e.x - 5 + 'px';
+            document.querySelector('.right-mouse-click').classList.add('active');
+        }
+    });
+    document
+        .querySelector('.right-mouse-click')
+        .addEventListener('mouseleave', mouseleaveRightClickUL);
+    let li = document.querySelectorAll('.right-mouse-click ul li');
+    li[0].addEventListener('click', setStatusBackgroundPlay);
+    li[1].addEventListener('click', () => {
+        window.open('https://github.com/quangtrong1506/wallpaper-app/blob/main/README.md');
+    });
+    li[2].addEventListener('click', () => {
+        window.electronAPI.openInCMD('C:/Windows/System32/rundll32.exe user32.dll,LockWorkStation');
+    });
+    li[3].addEventListener('click', () => {
+        Swal.fire({
+            title: 'Xác nhận đóng ứng dụng?',
+            showCancelButton: true,
+            confirmButtonText: 'Thoát',
+            cancelButtonText: 'Hủy',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.electronAPI.quitApp();
+            }
+        });
+    });
+    if (!localStorage.getItem('geo')) changeGeo();
 };
 function setTimeInScreen() {
-    var date = new Date();
-    var h = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
-    var m = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
-    var d = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
-    var month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1;
+    let date = new Date();
+    let h = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
+    let m = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+    let d = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+    let month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1;
     document.querySelector('.extensions .time .count-time .hours').innerHTML = h;
     document.querySelector('.extensions .time .count-time .minutes').innerHTML = m;
     document.querySelector('.extensions .time .day').innerHTML = getTextOfDay(date.getDay());
@@ -236,13 +287,13 @@ function CloseBrightness() {
     closeBrightness = setTimeout(() => {
         if (document.querySelector('.extensions .change-brightness').classList.contains('active'))
             document.querySelector('.extensions .change-brightness').classList.remove('active');
-    }, 5000);
+    }, 3000);
 }
 function CloseAudio() {
     closeAudio = setTimeout(() => {
         if (document.querySelector('.extensions .change-audio').classList.contains('active'))
             document.querySelector('.extensions .change-audio').classList.remove('active');
-    }, 5000);
+    }, 3000);
 }
 function getLocalData() {
     if (localStorage.getItem('background'))
@@ -251,17 +302,20 @@ function getLocalData() {
 function setVideoBackground() {
     let videoList = ['ngay.mp4', 'dem.mp4'];
     let date = new Date();
-    let hour = date.getHours();
+    let hour = date.getHours() + date.getMinutes() / 60;
     let video = document.getElementById('video');
+    let src = video.src;
     if (background.type == 'auto') {
         if (hour >= background.day && hour < background.night) {
-            video.src = './src/videos/' + videoList[0];
-        } else video.src = './src/videos/' + videoList[1];
+            src = './src/videos/' + videoList[0];
+        } else src = './src/videos/' + videoList[1];
     } else if (background.type == 'day') {
-        video.src = './src/videos/' + videoList[0];
+        src = './src/videos/' + videoList[0];
     } else if (background.type == 'night') {
-        video.src = './src/videos/' + videoList[1];
+        src = './src/videos/' + videoList[1];
     }
+    if (!video.src.match(src)) video.src = src;
+    if (!canPlayVideoBackground) document.getElementById('video').pause();
 }
 
 function setDaysOfCalendar(day = new Date()) {
@@ -349,21 +403,24 @@ function chargingChange() {
         let batteryLevel = Math.round(value.level * 100);
         var batteryChargingTime =
             value.chargingTime == 'Infinity' ? 'Infinity' : parseInt(value.chargingTime / 60, 10);
-
-        var batteryDischargingTime =
-            value.dischargingTime == 'Infinity'
-                ? 'Infinity'
-                : parseInt(value.dischargingTime / 60, 10);
         if (batteryLevel == 100 && batteryCharging)
             sendNotification(
                 'Pin đầy',
                 'Pin của bạn đã được sạc đầy vui lòng rút sạc để bảo vệ pin'
             );
-        if (batteryChargingTime != 'Infinity' && batteryCharging)
+        if (batteryChargingTime != 'Infinity' && batteryCharging && batteryChargingTime != 0)
             sendNotification(
                 'Thời gian sạc',
                 'Pin của bạn sẽ được sạc đầy sau ' + batteryChargingTime + ' phút'
             );
+        if (batteryLevel <= 20 && !batteryCharging && !document.getElementById('video').paused)
+            document.getElementById('video').pause();
+        else if (
+            batteryCharging &&
+            document.getElementById('video').paused &&
+            canPlayVideoBackground
+        )
+            document.getElementById('video').play();
     });
 }
 navigator
@@ -372,7 +429,7 @@ navigator
     .catch((error) => console.log(error));
 
 function sendNotification(title = 'Không có tiêu đề', body = 'Không có mô tả') {
-    window.electronAPI.setTitle({ title: title, body: body });
+    if (window.electronAPI) window.electronAPI.setTitle({ title: title, body: body });
 }
 
 function dragElement(id) {
@@ -453,12 +510,11 @@ function setPosElement(id, top, left) {
     element.style.left = left + 'px';
 }
 
-function getWeather(lat = 20.987904, lon = 105.7947648) {
-    var requestOptions = {
+function getWeather(lat = defaultData.lat, lon = defaultData.lon) {
+    let requestOptions = {
         method: 'GET',
         redirect: 'follow',
     };
-
     fetch(
         `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&lang=vi&appid=3d4536c55fefa30aa5c6b8e247de03b3`,
         requestOptions
@@ -468,17 +524,39 @@ function getWeather(lat = 20.987904, lon = 105.7947648) {
             result = JSON.parse(result);
             if (!result.code) {
                 weather = result.current;
+                let sunrise = new Date(weather.sunrise * 1000);
+                let sunset = new Date(weather.sunset * 1000);
+                background.day = (sunrise.getHours() + sunrise.getMinutes() / 60).toFixed(2);
+                background.night = (sunset.getHours() + sunset.getMinutes() / 60).toFixed(2);
                 localStorage.setItem('weather', JSON.stringify(weather));
+                localStorage.setItem('background', JSON.stringify(background));
             }
         })
         .catch((error) => console.log('error', error));
+
+    // fetch(
+    //     `http://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&appid=3d4536c55fefa30aa5c6b8e247de03b3`,
+    //     requestOptions
+    // )
+    //     .then((response) => response.text())
+    //     .then((result) => {
+    //         result = JSON.parse(result);
+    //         result = result[0];
+    //         var city = {
+    //             lat: result.lat,
+    //             lon: result.lon,
+    //             name: result.local_names.vi,
+    //         };
+    //         localStorage.setItem('city', JSON.stringify(city));
+    //     })
+    //     .catch((error) => console.log('error', error));
 }
 
 async function setWeatherInScreen() {
-    if (localStorage.getItem('position')) {
-        let position = JSON.parse(localStorage.getItem('position'));
-        await getWeather(position.lat, position.lon);
-    } else await getWeather();
+    if (localStorage.getItem('geo')) {
+        let position = JSON.parse(localStorage.getItem('geo'));
+        getWeather(position.lat, position.lon);
+    } else getWeather();
     weather = JSON.parse(localStorage.getItem('weather'));
     document.getElementById('weather-icon').src =
         './src/images/weather/' + weather.weather[0].icon + '.png';
@@ -493,11 +571,111 @@ async function setWeatherInScreen() {
     document.getElementById('humidity').innerHTML = weather.humidity + '%';
     document.getElementById('uvi').innerHTML = weather.uvi;
 }
+function mouseleaveRightClickUL() {
+    document.querySelector('.right-mouse-click').classList.remove('active');
+}
 
-function convertTZ(date, timeZone) {
-    return new Date(
-        (typeof date === 'string' ? new Date(date) : date).toLocaleString('vi-VN', {
-            timeZone: timeZone,
-        })
-    );
+function setStatusBackgroundPlay() {
+    let li = document.querySelectorAll('.right-mouse-click ul li');
+    li[0].innerHTML = canPlayVideoBackground ? 'Chạy video màn hình' : 'Dừng video màn hình';
+    canPlayVideoBackground = !canPlayVideoBackground;
+    if (!canPlayVideoBackground) document.getElementById('video').pause();
+    else document.getElementById('video').play();
+}
+
+function checkFirstLogin() {
+    if (!localStorage.getItem('geo')) {
+    }
+}
+
+function changeGeo() {
+    let lat = temp.lat || defaultData.lat;
+    let lon = temp.lon || defaultData.lon;
+    let name = temp.cityName;
+    let oldName = 'Thành phố Hà Nội';
+    if (localStorage.getItem('geo')) {
+        let tmp = JSON.parse(localStorage.getItem('geo'));
+        oldName = tmp.cityName;
+    }
+    let newCityName = name ? `Vị trí mới: <span class="city-name-overview">${name}</span>` : '';
+    Swal.fire({
+        title: 'Thay đổi vị trí của bạn',
+        html: `<div class="change-geo">
+                    <div class="header">
+                        <h4>Nếu bạn không nhập thông tin hệ thống sẽ lấy vị trí mặc định </h4>
+                        <h4>Vị trí hiện tại: <span class="city-name-old">${oldName}</span></h4>
+                        <h4>${newCityName}</h4>
+                    </div>
+                    <div class="geo-input">
+                        <div>
+                            <label for="geo-lat">Vĩ độ (latitude)</label>
+                            <input id="geo-lat" type="text" placeholder="Mặc định: ${defaultData.lat}" value="${lat}">
+                        </div>
+                        <div>
+                            <label for="geo-lon">Kinh độ (longitude)</label>
+                            <input id="geo-lon" type="text" placeholder="Mặc định: ${defaultData.lon}" value="${lon}">
+                        </div>
+                    </div>
+                </div>
+                <i style="color: red; ">*</i><i style="font-size: 14px;"> Ấn lưu để không hiện lại thông báo này</i>
+
+                `,
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: 'Cập nhật',
+        denyButtonText: `Check`,
+        CancelButtonText: `Hủy`,
+        customClass: {
+            cancelButton: 'cancel--btn',
+            confirmButton: 'confirm--btn',
+            denyButton: 'deny--btn',
+        },
+    }).then((result) => {
+        let lat = document.getElementById('geo-lat').value || defaultData.lat;
+        let lon = document.getElementById('geo-lon').value || defaultData.lon;
+        temp.lat = lat;
+        temp.lon = lon;
+        if (result.isConfirmed) {
+            let c = localStorage.getItem('geo') ? name : defaultData.cityName;
+            localStorage.setItem(
+                'geo',
+                JSON.stringify({
+                    cityName: name || c,
+                    lat: lat,
+                    lon: lon,
+                })
+            );
+            Swal.fire('Thay đổi vị trí nhận thời tiết thành công!', temp.cityName, 'success');
+            temp = {};
+        } else if (result.isDenied) {
+            let requestOptions = {
+                method: 'GET',
+                redirect: 'follow',
+            };
+            fetch(
+                `http://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&appid=3d4536c55fefa30aa5c6b8e247de03b3`,
+                requestOptions
+            )
+                .then((response) => response.text())
+                .then((result) => {
+                    result = JSON.parse(result);
+                    console.log(result);
+                    if (!result.message) {
+                        temp.cityName = result[0].local_names.vi || result[0].name;
+                        Swal.fire(
+                            'Vị trí bạn nhập là',
+                            temp.cityName + ', ' + result[0].country,
+                            'info'
+                        ).then(changeGeo);
+                    } else Swal.fire('ERROR', result.message, 'error').then(changeGeo);
+                })
+                .catch(() =>
+                    Swal.fire(
+                        'Lỗi lấy thông tin vị trí',
+                        'vui lòng kiểm tra lại đường truyền internet của bạn',
+                        'error'
+                    ).then(changeGeo)
+                );
+        }
+    });
 }

@@ -8,11 +8,10 @@ const {
     powerMonitor,
     Notification,
     ipcMain,
+    globalShortcut,
 } = require('electron');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
-
-const cmd = require('node-cmd');
 const isDev = require('electron-is-dev');
 
 // biến toàn cục
@@ -57,6 +56,8 @@ function createWindow() {
         mainWindow.blur();
     });
     mainWindow.webContents.setWindowOpenHandler((link) => {
+        if (link.url.match('https://youtube.com'))
+            return createNewWindow(link.url, 'resources/images/youtube.ico');
         return shell.openExternal(link.url);
     });
 }
@@ -64,7 +65,9 @@ function createWindow() {
 const singleInstanceLock = app.requestSingleInstanceLock();
 app.whenReady().then(() => {
     ipcMain.on('set-notification', showNotification);
-    ipcMain.on('open-in-cmd', OpenInCMD);
+    ipcMain.on('quit-app', () => {
+        app.quit();
+    });
     createWindow();
     const primaryDisplay = screen.getPrimaryDisplay();
     const { width, height } = primaryDisplay.workAreaSize;
@@ -89,10 +92,10 @@ app.whenReady().then(() => {
     autoUpdater.checkForUpdates();
     setInterval(() => autoUpdater.checkForUpdates(), 5 * 60 * 1000);
 });
-
-app.setLoginItemSettings({
-    openAtLogin: true,
-});
+if (!isDev)
+    app.setLoginItemSettings({
+        openAtLogin: true,
+    });
 
 /*New Update Available*/
 autoUpdater.on('update-available', (info) => {
@@ -112,7 +115,6 @@ autoUpdater.on('update-downloaded', () => {
     });
 });
 
-// log in javascript ?
 function showNotification(event, options) {
     new Notification({
         title: options.title,
@@ -153,7 +155,7 @@ function createNewWindow(url, icon = 'resources/images/logo.ico') {
         frame: true,
         x: 0,
         y: 0,
-        icon: path.join(__dirname, icon),
+        icon: icon,
     });
 
     // and load the link of the app.
@@ -171,8 +173,6 @@ function createNewWindow(url, icon = 'resources/images/logo.ico') {
 function sendLog(message, type) {
     mainWindow.webContents.send('debug', { message: message, type: type });
 }
-
-function OpenInCMD(event, path) {
-    sendLog('Path: ' + path);
-    cmd.run(path);
-}
+process.on('uncaughtException', function (err) {
+    sendLog(err);
+});

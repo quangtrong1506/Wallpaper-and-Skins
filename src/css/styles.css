@@ -77,9 +77,14 @@ body .background .video-bg {
 .element-click {
     position: fixed;
     cursor: pointer;
-    /* border: 1px solid white; */
+    /* border: 2px solid rgb(255, 0, 0); */
     z-index: 10;
     /* overflow: hidden; */
+}
+/* Debug */
+.extensions > div::after,
+.extensions > div::before {
+    /* border: 1px solid yellow; */
 }
 .extensions .calendar {
     top: 39vh;
@@ -395,10 +400,7 @@ body .background .video-bg {
     width: 108px;
     height: 180px;
 }
-.extensions > div::after,
-.extensions > div::before {
-    /* border: 1px solid yellow; */
-}
+
 .extensions .tivi::before {
     content: '';
     position: absolute;
@@ -575,6 +577,68 @@ body .background .video-bg {
     background: #323232;
     cursor: pointer;
     border-radius: 50%;
+}
+.right-mouse-click {
+    position: absolute;
+    z-index: 100;
+    top: 0;
+    display: none;
+}
+.right-mouse-click.active {
+    display: block;
+}
+
+.right-mouse-click .content ul {
+    margin: 0;
+    padding: 0;
+    background-color: white;
+    width: 160px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+.right-mouse-click .content ul li {
+    display: inline-block;
+    cursor: pointer;
+    padding: 5px 20px 5px 10px;
+    width: 100%;
+}
+.right-mouse-click .content ul li:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+.confirm--btn {
+    background-color: #0ea293 !important;
+}
+.cancel--btn {
+    background-color: red !important;
+}
+.deny--btn {
+    background-color: #009fbd !important;
+}
+.change-geo h3,
+.change-geo h4 {
+    margin: 0;
+    padding: 0;
+}
+.change-geo .geo-input {
+    margin-top: 20px;
+}
+.change-geo .geo-input label {
+    display: inline-block;
+    min-width: 130px;
+    margin-top: 10px;
+    text-align: left;
+}
+.change-geo .geo-input input {
+    border: 1px solid rgb(176, 176, 176);
+    /* padding: 7px; */
+    font-size: 18px;
+    border-radius: 2px;
+}
+
+.change-geo .geo-input input:focus,
+.change-geo .geo-input input:focus-visible {
+    border: 1px solid rgb(176, 176, 176);
+    outline: none;
 }
 
 @media only screen and (min-height: 600px) {

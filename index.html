@@ -73,7 +73,7 @@
             <div class="light-m light element-click"></div>
             <div class="change-brightness">
                 <img src="./src/images/sun.png" width="15" height="15" style="margin-left: 0; margin-right: 7px;">
-                <input style="flex: 1;" type="range" value="0" min="1" max="100" class="slider" id="brightness">
+                <input style="flex: 1;" type="range" value="100" min="1" max="100" class="slider" id="brightness">
             </div>
             <div class="tivi element-click"></div>
             <div class="change-audio ">
@@ -142,8 +142,19 @@
 
             <div class="blur" onclick="closeExtensions()" style="display: none;"></div>
         </div>
+        <div class="right-mouse-click">
+            <div class="content">
+                <ul>
+                    <li>Dừng video màn hình</li>
+                    <li>Hướng dẫn sử dụng</li>
+                    <li>Tắt máy tính</li>
+                    <li>Thoát ứng dụng</li>
+                </ul>
+            </div>
+        </div>
 
     </div>
+    <script src="./src/js/sweetalert.js"></script>
     <script src="./src/js/support.js"></script>
     <script src="./src/js/main.js"></script>
 </body>
