@@ -5,7 +5,7 @@ Quang Trọng
 ### Hướng dẫn sử dụng
 
 - Màn hình chính
-[ảnh màn hình chính](https://i.ibb.co/NSkVBv1/nh1.png "ảnh minh họa")
+![ảnh màn hình chính](https://i.ibb.co/NSkVBv1/nh1.png "ảnh minh họa")
 
 1. Đồng hồ thời gian thực ( có thể thay đổi vị trí)
 2. Thay đổi nền ngày và đêm
