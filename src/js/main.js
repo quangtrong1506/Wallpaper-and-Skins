@@ -258,11 +258,14 @@ window.onload = function () {
         window.electronAPI.openInCMD('C:/Windows/System32/rundll32.exe user32.dll,LockWorkStation');
     });
     li[3].addEventListener('click', () => {
+        window.electronAPI.openInCMD('C:/Windows/System32/SlideToShutDown.exe');
+    });
+    li[4].addEventListener('click', () => {
         Swal.fire({
             title: 'Xác nhận đóng ứng dụng?',
-            showCancelButton: true,
+            showDenylButton: true,
             confirmButtonText: 'Thoát',
-            cancelButtonText: 'Hủy',
+            denyButtonText: 'Hủy',
         }).then((result) => {
             if (result.isConfirmed) {
                 window.electronAPI.quitApp();
@@ -270,6 +273,13 @@ window.onload = function () {
         });
     });
     if (!localStorage.getItem('geo')) changeGeo();
+
+    let li2 = document.querySelectorAll('.stair ul li');
+    li2.forEach((elmt) => {
+        elmt.addEventListener('click', () => {
+            Swal.fire('Hệ thống sẽ cập nhật chức năng này sau');
+        });
+    });
 };
 function setTimeInScreen() {
     let date = new Date();

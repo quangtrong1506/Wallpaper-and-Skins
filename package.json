@@ -1,6 +1,6 @@
 {
     "name": "live_screen",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Live Wallpaper được tạo bởi Quang Trọng",
     "main": "main.js",
     "productName": "Live Wallpaper",
