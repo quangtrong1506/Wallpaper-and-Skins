@@ -6,7 +6,7 @@ Quang Trọng
 
 - Màn hình chính
 
-![https://i.ibb.co/NSkVBv1/nh1.png](https://i.ibb.co/NSkVBv1/nh1.png "MarineGEO logo")
+  ![https://i.ibb.co/NSkVBv1/nh1.png](./src/images/Ảnh1.png)
 
 
 1. Đồng hồ thời gian thực ( có thể thay đổi vị trí)
