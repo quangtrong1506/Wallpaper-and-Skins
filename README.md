@@ -1,6 +1,7 @@
 # wallpaper-app
 Quang Trọng
 
+Tải xuống [Download](https://github.com/quangtrong1506/wallpaper-app/releases/download/v1.0.2/Live-Wallpaper-Setup-1.0.2.exe)
 
 ### Hướng dẫn sử dụng
 
