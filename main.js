@@ -64,10 +64,15 @@ function createWindow() {
 
 const singleInstanceLock = app.requestSingleInstanceLock();
 app.whenReady().then(() => {
-    ipcMain.on('set-notification', showNotification);
+    ipcMain.on('set-notification', getNotificationInPreload);
     ipcMain.on('quit-app', () => {
         app.quit();
     });
+    ipcMain.on('confirm-relaunch', () => {
+        app.relaunch();
+        app.exit();
+    });
+
     createWindow();
     const primaryDisplay = screen.getPrimaryDisplay();
     const { width, height } = primaryDisplay.workAreaSize;
@@ -112,17 +117,30 @@ autoUpdater.on('update-downloaded', () => {
     showNotification(null, {
         title: 'Cập nhật thành công',
         body: 'Khởi động lại ứng dụng để áp dụng các bản cập nhật',
+        isUpdated: true,
     });
 });
 
-function showNotification(event, options) {
-    new Notification({
+function getNotificationInPreload(event, options) {
+    showNotification(options);
+}
+function showNotification(options) {
+    var notification = new Notification({
         title: options.title,
         body: options.body,
         timeoutType: 'default',
         icon: 'resources/images/logo.ico',
         actions: [],
-    }).show();
+    });
+    notification.show();
+    if (options.isUpdated) {
+        notification.on('click', () => {
+            mainWindow.webContents.send('relaunch-app', true);
+        });
+        notification.on('close', () => {
+            mainWindow.webContents.send('relaunch-app', true);
+        });
+    }
 }
 
 app.on('window-all-closed', function () {
@@ -138,6 +156,12 @@ function trayMenu() {
             },
         },
         {
+            label: 'Open devtool',
+            click: () => {
+                mainWindow.webContents.openDevTools();
+            },
+        },
+        {
             label: 'Liên hệ',
             click: () => {
                 shell.openExternal('https://www.facebook.com/quangtrong.1506');
@@ -147,6 +171,7 @@ function trayMenu() {
     return innerMenu;
 }
 
+// Mở cửa sổ mới
 function createNewWindow(url, icon = 'resources/images/logo.ico') {
     win = new BrowserWindow({
         width: widthScreen,
@@ -174,5 +199,5 @@ function sendLog(message, type) {
     mainWindow.webContents.send('debug', { message: message, type: type });
 }
 process.on('uncaughtException', function (err) {
-    sendLog(err);
+    sendLog(err, 'error');
 });

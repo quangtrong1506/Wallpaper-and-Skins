@@ -16,6 +16,16 @@ ipcRenderer.on('debug', function (event, data) {
     else if (data.type == 'warn') console.warn('main.js: ' + data.message);
     else console.log('main.js: ' + data.message);
 });
+ipcRenderer.on('relaunch-app', function (event, data) {
+    Swal.fire({
+        title: 'Xác nhận khởi động lại ứng dụng?',
+        showDenyButton: true,
+        confirmButtonText: 'Khởi động lại',
+        denyButtonText: `Để sau`,
+    }).then((result) => {
+        if (result.isConfirmed) confirmRelaunch();
+    });
+});
 
 const setBrightness = async function setBrightness(value) {
     value = value > 1 ? 1 : value < 0 ? 0 : value;
@@ -52,6 +62,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getDataSystem: getDataSystem,
     isMuted: isMuted,
     quitApp: () => ipcRenderer.send('quit-app'),
+    confirmRelaunch: () => ipcRenderer.send('confirm-relaunch'),
 });
 
 async function getDataSystem() {

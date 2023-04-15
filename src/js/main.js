@@ -263,7 +263,7 @@ window.onload = function () {
     li[4].addEventListener('click', () => {
         Swal.fire({
             title: 'Xác nhận đóng ứng dụng?',
-            showDenylButton: true,
+            showDenyButton: true,
             confirmButtonText: 'Thoát',
             denyButtonText: 'Hủy',
         }).then((result) => {
