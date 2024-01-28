@@ -12,19 +12,26 @@ ipcRenderer.on('lock-screen', function (event, data) {
 });
 
 ipcRenderer.on('debug', function (event, data) {
-    if (data.type == 'error') console.error('main.js: ' + data.message);
-    else if (data.type == 'warn') console.warn('main.js: ' + data.message);
-    else console.log('main.js: ' + data.message);
+    let message = `[${new Date().toLocaleString()}] main: ` + data.message;
+    if (data.type == 'error') console.error(message);
+    else if (data.type == 'warn') console.warn(message);
+    else console.log(message);
 });
-ipcRenderer.on('relaunch-app', function (event, data) {
-    Swal.fire({
-        title: 'Xác nhận khởi động lại ứng dụng?',
-        showDenyButton: true,
-        confirmButtonText: 'Khởi động lại',
-        denyButtonText: `Để sau`,
-    }).then((result) => {
-        if (result.isConfirmed) confirmRelaunch();
-    });
+ipcRenderer.on('relaunch-app', function () {
+    events = {
+        confirmEvent: () => {
+            if (window.electronAPI) window.electronAPI.confirmRelaunch();
+        },
+    };
+    showSwalAlert(
+        {
+            title: 'Xác nhận khởi động lại ứng dụng?',
+            showDenyButton: true,
+            confirmButtonText: 'Khởi động lại',
+            denyButtonText: `Để sau`,
+        },
+        events
+    );
 });
 
 const setBrightness = async function setBrightness(value) {
@@ -47,7 +54,7 @@ const setAudio = async (value) => {
     try {
         speaker.set(value);
     } catch (e) {
-        sendLog('Lỗi chỉnh âm lượng');
+        sendLog('Lỗi chỉnh âm lượng', 'error');
     }
 };
 contextBridge.exposeInMainWorld('electronAPI', {

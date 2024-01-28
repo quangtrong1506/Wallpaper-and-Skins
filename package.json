@@ -1,6 +1,6 @@
 {
     "name": "live_screen",
-    "version": "1.0.3",
+    "version": "1.0.0",
     "description": "Live Wallpaper được tạo bởi Quang Trọng",
     "main": "main.js",
     "productName": "Live Wallpaper",
@@ -34,31 +34,29 @@
             }
         ]
     },
+    "type": "module",
     "keywords": [
         "Screen",
         "live screen"
     ],
     "author": "Quang Trọng",
     "license": "CC0-1.0",
-    "repository": "https://github.com/quangtrong1506/wallpaper-app",
+    "repository": "https://github.com/quangtrong1506/wallpaper-app-2",
     "publish": {
         "provider": "github",
         "releaseType": "release"
     },
     "devDependencies": {
-        "electron": "^22.0.0",
-        "electron-builder": "^23.6.0",
-        "electron-packager": "^17.1.1",
-        "i": "^0.3.7",
-        "install": "^0.13.0"
+        "electron": "^28.2.0",
+        "electron-builder": "^24.9.1",
+        "electron-packager": "^17.1.2"
     },
     "dependencies": {
         "brightness": "^3.0.0",
-        "electron-is-dev": "^2.0.0",
-        "electron-updater": "^5.3.0",
+        "electron-is-dev": "^3.0.1",
+        "electron-updater": "^6.1.7",
+        "file-saver": "^2.0.5",
         "node-cmd": "^5.0.0",
-        "node-gyp": "^9.3.1",
-        "npm": "^9.6.4",
-        "win-audio": "^2.0.2"
+        "node-gyp": "^10.0.1"
     }
 }

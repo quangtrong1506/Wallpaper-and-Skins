@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Background</title>
+        <link rel="stylesheet" href="../../assets/css/style.css" />
+    </head>
+    <body
+        onmousedown="mousedownEvent(event)"
+        onmouseleave="mouseLeaveEvent(); showMenuLanguage(false)"
+    >
+        <div class="video-bg">
+            <video id="video-background" muted autoplay loop>
+                <source src="../../assets/videos/bg-default.mp4" />
+                Your browser does not support HTML5 video.
+            </video>
+        </div>
+        <div class="menu">
+            <div class="menu__container">
+                <div id="text-video-state" class="menu__item" onclick="changeStateVideo()">
+                    Dừng video
+                </div>
+                <div class="menu__item text-change-video" onclick="showMenuChangeVideo()">
+                    Đổi video
+                </div>
+                <div id="text-language" class="menu__item" onclick="showMenuLanguage()">
+                    <span class="text-select-language">Ngôn ngữ</span>
+                    <span class="right-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+                            <path
+                                d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"
+                            />
+                        </svg>
+                    </span>
+                    <div class="menu-language" onmouseleave="showMenuLanguage(false)"></div>
+                </div>
+                <div class="menu__item text-open-settings">Cài đặt</div>
+                <div class="menu__item text-exit">Thoát</div>
+            </div>
+        </div>
+        <div class="change-video">
+            <div class="change-video__container">
+                <h1 class="header text-change-video text-center"></h1>
+                <div class="close--btn" onclick="showMenuChangeVideo(false)">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                        <path
+                            fill="red"
+                            d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+                        />
+                    </svg>
+                </div>
+                <div class="change-video__container-video-upload">
+                    <div class="upload">
+                        <div class="upload--btn">
+                            <label for="input-upload-video">
+                                <div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                                        <path
+                                            d="M144 480C64.5 480 0 415.5 0 336c0-62.8 40.2-116.2 96.2-135.9c-.1-2.7-.2-5.4-.2-8.1c0-88.4 71.6-160 160-160c59.3 0 111 32.2 138.7 80.2C409.9 102 428.3 96 448 96c53 0 96 43 96 96c0 12.2-2.3 23.8-6.4 34.6C596 238.4 640 290.1 640 352c0 70.7-57.3 128-128 128H144zm79-217c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l39-39V392c0 13.3 10.7 24 24 24s24-10.7 24-24V257.9l39 39c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0l-80 80z"
+                                        />
+                                    </svg>
+                                </div>
+                                <div class="text-upload"></div>
+                            </label>
+                            <input
+                                type="file"
+                                id="input-upload-video"
+                                accept="video/mp4"
+                                style="display: none"
+                                onchange="uploadVideoChangeEvent(this)"
+                            />
+                        </div>
+                    </div>
+                    <div class="video-demo active">
+                        <video id="video-demo-upload" src="" controls></video>
+                        <div class="video-name"></div>
+                    </div>
+                </div>
+
+                <div class="bottom-btn">
+                    <div class="save--btn text-save" onclick="saveNewVideo()"></div>
+                    <div class="reset--btn text-reset"></div>
+                </div>
+            </div>
+        </div>
+        <script src="../../assets/js/sweetalert.js"></script>
+        <script src="../../assets/js/bg.text.js"></script>
+        <script src="../../assets/js/bg.view.js"></script>
+    </body>
+</html>
