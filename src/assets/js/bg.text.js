@@ -34,6 +34,10 @@ const vi = {
     background: 'Chạy dưới nền',
     MessageCompleteUploadVideo: 'Hình nền sẽ được thay đổi sau khi tải lên hoàn tất',
     MessageUploadVideoCompleted: 'Tải lên video hoàn tất',
+    videoBackgroundError: 'Đã mất file video tải lên, Hệ thống sẽ dùng video gốc',
+    confirm: 'Xác nhận',
+    setToDefault: 'Bạn muốn cài lại mặc định',
+    success: 'Thành công',
 };
 const en = {
     menu: {
@@ -59,6 +63,12 @@ const en = {
     cancel: 'Cancel',
     background: 'Runs in the background',
     MessageCompleteUploadVideo: 'The background image will be changed once the upload is complete',
+    MessageUploadVideoCompleted: 'Upload video completed!',
+    videoBackgroundError:
+        'The uploaded video file has been lost. The system will use the original video',
+    confirm: 'Confirm',
+    setToDefault: 'You want to reset to default',
+    success: 'Success',
 };
 let text = vi;
 const setMainLanguage = () => {

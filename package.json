@@ -1,21 +1,21 @@
 {
-    "name": "live_screen",
-    "version": "1.0.0",
-    "description": "Live Wallpaper được tạo bởi Quang Trọng",
+    "name": "wallpaper_and_skins",
+    "version": "1.0.1",
+    "description": "Live Wallpaper and cute shins for computers",
     "main": "main.js",
-    "productName": "Live Wallpaper",
+    "productName": "Wallpaper and Skins",
     "scripts": {
         "start": "electron .",
         "dir": "electron-builder --dir",
         "dist": "electron-builder"
     },
     "build": {
-        "appId": "15.06.2001",
-        "productName": "Live Wallpaper",
-        "copyright": "Copyright ©2023 QuangTrong",
+        "appId": "26032001",
+        "productName": "Wallpaper and Skins",
+        "copyright": "Copyright ©2024 TrongSaDoa",
         "directories": {
             "buildResources": "resources",
-            "output": "dist/LiveScreen"
+            "output": "dist/wallpaper_and_skins"
         },
         "mac": {
             "category": "Screen"
@@ -23,25 +23,20 @@
         "win": {
             "target": "NSIS",
             "icon": "icon.png"
-        },
-        "extraFiles": [
-            {
-                "from": "src/images/build/",
-                "to": "resources/images/",
-                "filter": [
-                    "**/*"
-                ]
-            }
-        ]
+        }
     },
     "type": "module",
     "keywords": [
         "Screen",
-        "live screen"
+        "live screen",
+        "Wallpaper",
+        "Skins computers",
+        "Computers",
+        "Electron"
     ],
     "author": "Quang Trọng",
     "license": "CC0-1.0",
-    "repository": "https://github.com/quangtrong1506/wallpaper-app-2",
+    "repository": "https://github.com/quangtrong1506/live-wallpaper-2",
     "publish": {
         "provider": "github",
         "releaseType": "release"
@@ -52,11 +47,10 @@
         "electron-packager": "^17.1.2"
     },
     "dependencies": {
-        "brightness": "^3.0.0",
+        "common-es": "^1.0.1",
         "electron-is-dev": "^3.0.1",
+        "electron-json-storage": "^4.6.0",
         "electron-updater": "^6.1.7",
-        "file-saver": "^2.0.5",
-        "node-cmd": "^5.0.0",
-        "node-gyp": "^10.0.1"
+        "fs-extra": "^11.2.0"
     }
 }
