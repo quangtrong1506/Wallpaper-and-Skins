@@ -1,31 +1,32 @@
-import electron from 'electron';
-import isDev from 'electron-is-dev';
-import updater from 'electron-updater';
-import path from 'path';
+import { getGlobals } from "common-es";
+import electron, { Menu } from "electron";
+import isDev from "electron-is-dev";
+import storage from "electron-json-storage";
+import updater from "electron-updater";
+import path from "path";
+import CreateBackgroundWindow from "./src/Windows/BackgroundWindow.js";
+import { TRAY_ITEMS } from "./src/constant.js";
+import ipcMainEvents from "./src/helpers/ipcMainEvents.js";
 
-import CreateBackgroundWindow from './src/Windows/BackgroundWindow.js';
-import ipcMainEvents from './src/helpers/ipcMainEvents.js';
-const {
-    BrowserWindow,
-    Menu,
-    Notification,
-    Tray,
-    app,
-    ipcMain,
-    powerMonitor,
-    screen,
-    shell,
-    ipcRenderer,
-    contextBridge,
-} = electron;
-
+// Biến toàn cục hoặc biến config
+//? const import
+const { BrowserWindow, Notification, Tray, app, screen, shell } = electron;
+const { __dirname, __filename } = getGlobals(import.meta.url);
+//? Config auto update
 const { autoUpdater } = updater;
 autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = true;
-const Window = {
+//? Const
+const WINDOWS = {
     backgroundWindow: null,
+    tray: null,
 };
-let tray = null,
+const defaultSettings = {
+    showWallpaper: true,
+    showWeather: true,
+};
+const Settings = { ...defaultSettings };
+let a = null,
     mainWindow = null,
     heightScreen,
     widthScreen;
@@ -33,9 +34,9 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         width: 1300,
         height: 900,
-        title: 'Live Wallpaper',
+        title: "Live Wallpaper",
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js'),
+            preload: path.join(__dirname, "preload.js"),
             nodeIntegration: true,
             contextIsolation: true,
             enableRemoteModule: false,
@@ -45,134 +46,79 @@ function createWindow() {
         frame: false,
         x: 0,
         y: 0,
-        icon: path.join(__dirname, './src/images/logo.ico'),
+        icon: path.join(__dirname, "./src/images/logo.ico"),
     });
-    mainWindow.loadFile('index.html');
+    mainWindow.loadFile("index.html");
     mainWindow.blur();
     mainWindow.removeMenu();
     mainWindow.maximize();
     mainWindow.setSkipTaskbar(true);
     if (isDev) mainWindow.webContents.openDevTools();
-    if (isDev) tray = new Tray('./src/assets/images/logo.ico');
-    else tray = new Tray('resources/images/logo.ico');
-    let contextMenu = Menu.buildFromTemplate(trayMenu());
-    tray.setContextMenu(contextMenu);
-    tray.setToolTip('Màn hình nền');
-    tray.on('click', () => {
-        mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
-        mainWindow.blur();
-    });
+
     mainWindow.webContents.setWindowOpenHandler((link) => {
-        if (link.url.match('https://youtube.com'))
-            return createNewWindow(link.url, 'resources/images/youtube.ico');
         return shell.openExternal(link.url);
     });
 }
-const singleInstanceLock = app.requestSingleInstanceLock();
 app.whenReady().then(() => {
-    // createWindow();
-    Window.backgroundWindow = CreateBackgroundWindow();
-    ipcMainEvents(Window.backgroundWindow);
+    if (!storage.getSync("settings")) storage.set("settings", defaultSettings);
+    else {
+        const data = storage.getSync("settings");
+        for (let x in data) {
+            Settings[x] = data[x];
+        }
+    }
+    WINDOWS.tray = new Tray(path.join(__dirname, "./src/assets/images/logo.ico"));
+    WINDOWS.tray.setToolTip("Wallpaper and Skins");
+    if (Settings.showWallpaper) createWallpaperWindow();
+    if (WINDOWS.backgroundWindow) {
+        TRAY_ITEMS.push({
+            id: "background",
+            label: "Mở Devtools Wallpaper",
+            click: () => {
+                WINDOWS.backgroundWindow.webContents.openDevTools();
+            },
+        });
+        const contextMenu = Menu.buildFromTemplate(TRAY_ITEMS);
+        WINDOWS.tray.setContextMenu(contextMenu);
+    }
     const primaryDisplay = screen.getPrimaryDisplay();
     const { width, height } = primaryDisplay.workAreaSize;
     widthScreen = width;
     heightScreen = height;
-
-    app.on('activate', function () {
+    app.on("activate", function () {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
-    if (process.platform === 'win32') app.setAppUserModelId(app.name);
-    if (!singleInstanceLock) app.quit();
+    if (process.platform === "win32") app.setAppUserModelId(app.name);
+    if (!app.requestSingleInstanceLock()) app.quit();
     else
-        app.on('second-instance', () => {
+        app.on("second-instance", () => {
             app.focus();
         });
-
-    powerMonitor.on('lock-screen', () => {
-        mainWindow.webContents.send('lock-screen', true);
-    });
-    powerMonitor.on('unlock-screen', () => {
-        mainWindow.webContents.send('lock-screen', false);
-    });
     autoUpdater.checkForUpdates();
     setInterval(() => autoUpdater.checkForUpdates(), 5 * 60 * 1000);
 });
+app.on("window-all-closed", function () {
+    if (process.platform !== "darwin") app.quit();
+});
+const createWallpaperWindow = () => {
+    WINDOWS.backgroundWindow = CreateBackgroundWindow();
+    ipcMainEvents(WINDOWS.backgroundWindow);
+};
 if (!isDev)
     app.setLoginItemSettings({
         openAtLogin: true,
     });
 
 /*New Update Available*/
-autoUpdater.on('update-available', (info) => {
+autoUpdater.on("update-available", (info) => {
     sendLog(`Update available. Current version ${app.getVersion()}`);
     autoUpdater.downloadUpdate();
 });
 
 /*Download Completion Message*/
 
-autoUpdater.on('error', (info) => {
-    sendLog(info, 'error');
-});
-autoUpdater.on('update-downloaded', () => {
-    showNotification({
-        title: 'Cập nhật thành công',
-        body: 'Khởi động lại ứng dụng để áp dụng các bản cập nhật',
-        isUpdated: true,
-    });
-});
-
-function showNotification(options) {
-    var notification = new Notification({
-        title: options.title,
-        body: options.body,
-        timeoutType: 'default',
-        icon: 'resources/images/logo.ico',
-        actions: [],
-    });
-    notification.show();
-    if (options.isUpdated) {
-        notification.on('click', () => {
-            sendLog('click');
-            mainWindow.webContents.send('relaunch-app', true);
-        });
-        notification.on('close', () => {
-            sendLog('close');
-            mainWindow.webContents.send('relaunch-app', true);
-        });
-    }
-}
-
-app.on('window-all-closed', function () {
-    if (process.platform !== 'darwin') app.quit();
-});
-
-function trayMenu() {
-    let innerMenu = [
-        {
-            label: 'Đóng ứng dụng',
-            click: () => {
-                app.quit();
-            },
-        },
-        {
-            label: 'Open devtool',
-            click: () => {
-                mainWindow.webContents.openDevTools();
-            },
-        },
-        {
-            label: 'Liên hệ',
-            click: () => {
-                shell.openExternal('https://www.facebook.com/quangtrong.1506');
-            },
-        },
-    ];
-    return innerMenu;
-}
-
-function sendLog(message, type) {
-    console.log(message, type);
-}
-process.on('uncaughtException', function (err) {
-    sendLog(err, 'error');
+autoUpdater.on("error", (info) => {});
+autoUpdater.on("update-downloaded", () => {});
+process.on("uncaughtException", function (err) {
+    alert("Error: " + err.message);
 });
