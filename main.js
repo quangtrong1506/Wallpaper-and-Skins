@@ -111,7 +111,10 @@ if (!isDev)
 // path: electron.app.getAppPath().replace("resources\\app.asar", "Wallpaper and Skins.exe"),
 /*New Update Available*/
 autoUpdater.on("update-available", (info) => {
-    sendLog(`Update available. Current version ${app.getVersion()}`);
+    showNotification({
+        body: `Update available. Current version ${app.getVersion()}`,
+        title: "Notifications",
+    });
     autoUpdater.downloadUpdate();
 });
 
@@ -130,6 +133,7 @@ process.on("uncaughtException", function (err) {
 const showNotification = (options = { title: "Test", body: "" }) => {
     let notification = new Notification({
         ...options,
+        icon: path.join(__dirname, "./src/images/logo.ico"),
     });
     notification.show();
 };
