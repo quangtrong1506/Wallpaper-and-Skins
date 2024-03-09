@@ -12,23 +12,8 @@ const DEFAULT_IMAGE_PATH = "../../assets/images/logo.png";
 const isDev = localStorage.getItem("isDev");
 const listVideoShow = [];
 const rootPathVideo = isDev ? "../../assets/videos/" : "../../../../videos/";
-const ROOT_PATH_IMAGE_SHORTCUT = isDev
-    ? "../../assets/images/shortcut/"
-    : "../../../../images/shortcut/";
-const SHORTCUTS = {
-    size: "sm",
-    items: [
-        {
-            id: null,
-            path: null,
-            iconPath: null,
-            title: null,
-            isHidden: false,
-            x: 0,
-            y: 0,
-        },
-    ],
-};
+const ROOT_ICO_PATH = isDev ? "../../assets/images/icons/" : "../../../../images/icons/";
+
 const customId = () => {
     let id = new Date().getTime();
     return id.toString();
@@ -49,8 +34,8 @@ window.onload = () => {
         bgState = JSON.parse(localStorage.getItem("bg-state"));
     }
     //Set text menu
-    // setStateVideo();
-    setText();
+    //Todo: setStateVideo();
+    setTextLabel();
     setViewSelectLanguage();
     setInterval(() => {
         if (bgState.isPlay && document.getElementById("video-background").paused) playVideo(true);
@@ -61,10 +46,14 @@ window.onload = () => {
         SHORTCUTS.items = shortcuts.items;
     } else SHORTCUTS.items = [];
     showShortcut();
-    electronAPI?.getListVideoDemo();
+    showSelectSizeShortcut();
+    if (!localStorage.getItem("isWeb")) {
+        electronAPI?.getListVideoDemo();
+        electronAPI?.getListImages();
+    }
 };
 const handleImageError = (event) => {
-    event.target.src = DEFAULT_IMAGE_PATH;
+    if (!event.target.src.match("logo")) event.target.src = DEFAULT_IMAGE_PATH;
 };
 //? Mouse Events
 const mouseLeaveEvent = () => {
@@ -86,8 +75,9 @@ const mousedownEvent = (event) => {
 window.addEventListener("contextmenu", (e) => e.preventDefault());
 //- End Mouse events
 
-// Menu
+//Todo: Menu
 const showMenu = (state, x = 0, y = 0) => {
+    closeAllMenuLevel2();
     let bodyState = {
         w: document.body.clientWidth,
         h: document.body.clientHeight,
@@ -122,8 +112,8 @@ const saveBgSate = () => {
 const setStateVideo = () => {
     playVideo(bgState.isPlay);
     bgState.isPlay
-        ? (document.getElementById("text-video-state").innerText = text.menu.video.pause)
-        : (document.getElementById("text-video-state").innerText = text.menu.video.play);
+        ? (document.getElementById("text-video-state").innerText = text.text_menu_video_pause)
+        : (document.getElementById("text-video-state").innerText = text.text_menu_video_play);
 };
 
 const playVideo = (state) => {
@@ -156,20 +146,20 @@ const showMenuChangeVideo = (state) => {
     } else document.querySelector(".change-video").classList.remove("active");
 };
 
-// Upload
+//Todo: Upload
 const uploadVideoChangeEvent = (event) => {
     if (!event.files[0]) return;
     console.log(event.files[0].path);
-    // document.querySelector('.video-name').innerHTML = event.files[0].name;
+    //Todo: document.querySelector('.video-name').innerHTML = event.files[0].name;
     let src = URL.createObjectURL(event.files[0]);
     bgState.videoUpload = event.files[0];
     document.getElementById("video-demo-upload").src = src;
     Swal.fire({
         title: "Uploading video",
-        html: text.uploadingVideo,
+        html: text.text_uploading_video,
         showConfirmButton: false,
-        confirmButtonText: text.background,
-        // denyButtonText: text.cancel,
+        confirmButtonText: text.text_background,
+        //Todo: denyButtonText: text.cancel,
         allowOutsideClick: false,
         didOpen: () => {
             Swal.showLoading();
@@ -189,7 +179,7 @@ const uploadVideoChangeEvent = (event) => {
         );
     });
 };
-// chỉnh path nền video
+//Todo: chỉnh path nền video
 const setNewPathVideoBackground = (path) => {
     document.getElementById("video-background").src = path;
     playVideo(bgState.isPlay);
@@ -198,28 +188,32 @@ const setNewPathVideoBackground = (path) => {
 const saveNewVideo = () => {
     showMenuChangeVideo(false);
     bgState.videoId = bgState.videoIdSelect;
-    setNewPathVideoBackground(rootPathVideo + bgState.videoId + ".mp4");
+    setNewPathVideoBackground(
+        bgState.videoId === videoPathDefault.id
+            ? videoPathDefault.path
+            : rootPathVideo + bgState.videoId + ".mp4"
+    );
     saveBgSate();
 };
-// khi video background bị lỗi
+//Todo: khi video background bị lỗi
 const videoPathError = () => {
     console.error(bgState);
     bgState.videoId = videoPathDefault.id;
     saveBgSate();
     setNewPathVideoBackground(videoPathDefault.path);
     Swal.fire({
-        text: text.videoBackgroundError,
+        text: text.text_video_background_error,
         icon: "info",
     });
 };
-// Dặt lại mặc định
+//Todo: Dặt lại mặc định
 const resetVideoBackground = () => {
     Swal.fire({
-        title: text.setToDefault,
+        title: text.text_set_to_default,
         icon: "question",
         showDenyButton: true,
-        confirmButtonText: text.confirm,
-        denyButtonText: text.cancel,
+        confirmButtonText: text.text_confirm,
+        denyButtonText: text.text_cancel,
         allowOutsideClick: false,
     }).then((result) => {
         if (result.isConfirmed) {
@@ -228,11 +222,11 @@ const resetVideoBackground = () => {
             showMenu(false);
             showMenuChangeVideo(false);
             setNewPathVideoBackground(videoPathDefault.path);
-            Swal.fire(text.success, "", "success");
+            Swal.fire(text.text_success, "", "success");
         }
     });
 };
-// xem video demo khi lựa chọn
+//Todo: xem video demo khi lựa chọn
 const setActiveVideoDemo = (id) => {
     let arr = document.querySelectorAll(".list-videos .list .item");
     arr.forEach((item) => {
@@ -250,7 +244,7 @@ const setActiveVideoDemo = (id) => {
     document.getElementById("video-demo-upload").play();
     bgState.videoIdSelect = id;
 };
-// Hiện thị khi thêm video
+//Todo: Hiện thị khi thêm video
 const addVideoShow = (video) => {
     const div = document.createElement("div");
     div.className = video.isActive ? "item active" : "item";
@@ -280,7 +274,7 @@ const addVideoShow = (video) => {
                         </div>`;
     document.querySelector(".list-videos .list").appendChild(div);
 };
-// Xoá 1 video
+//Todo: Xoá 1 video
 const removeVideoUpload = (id) => {
     Swal.fire({
         title: "Are you sure?",
@@ -317,32 +311,7 @@ const removeVideoUpload = (id) => {
 
 //?Language
 //Set Text Language
-const setText = () => {
-    document.querySelectorAll(".text-change-video").forEach((element) => {
-        element.innerHTML = text.menu.video.changeVideo;
-    });
-    document.querySelectorAll(".text-save").forEach((element) => {
-        element.innerHTML = text.save;
-    });
-    document.querySelectorAll(".text-reset").forEach((element) => {
-        element.innerHTML = text.reset;
-    });
-    document.querySelectorAll(".text-upload").forEach((element) => {
-        element.innerHTML = text.menu.video.uploadVideo;
-    });
-    document.querySelectorAll(".text-select-language").forEach((element) => {
-        element.innerHTML = text.language.text;
-    });
-    document.querySelectorAll(".text-open-settings").forEach((element) => {
-        element.innerHTML = text.openMainSetting;
-    });
-    document.querySelectorAll(".text-exit").forEach((element) => {
-        element.innerHTML = text.exit;
-    });
-    bgState.isPlay
-        ? (document.getElementById("text-video-state").innerText = text.menu.video.pause)
-        : (document.getElementById("text-video-state").innerText = text.menu.video.play);
-};
+
 const setViewSelectLanguage = () => {
     document.querySelector(".menu-language").innerHTML = "";
     listOfLanguages.forEach((lang) => {
@@ -369,12 +338,14 @@ const setLanguage = (code) => {
     localStorage.setItem("language", code);
     setMainLanguage();
     setViewSelectLanguage();
-    setText();
+    setTextLabel();
 };
 const showMenuLanguage = (state) => {
     if (state === true || state === undefined) {
-        if (!document.querySelector(".menu-language").classList.contains("active"))
+        if (!document.querySelector(".menu-language").classList.contains("active")) {
             document.querySelector(".menu-language").classList.add("active");
+            showMenuShortcutSize(false);
+        }
     } else document.querySelector(".menu-language").classList.remove("active");
 };
 
@@ -392,212 +363,12 @@ const Electron_sendData = (
     window.electronAPI?.viewToBackGround(data);
 };
 
-// showMenuChangeVideo(true);
+//Todo: showMenuChangeVideo(true);
 
-//? ICON
-// Drag
-const dragElement = (elmnt) => {
-    var pos1 = 0,
-        pos2 = 0,
-        pos3 = 0,
-        pos4 = 0;
-    elmnt.onmousedown = (event) => {
-        if (event.button === 0) dragMouseDown();
-    };
-
-    function dragMouseDown(e) {
-        e = e || window.event;
-        e.preventDefault();
-        // get the mouse cursor position at startup:
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        document.onmouseup = closeDragElement;
-        // call a function whenever the cursor moves:
-        document.onmousemove = elementDrag;
-    }
-
-    function elementDrag(e) {
-        e = e || window.event;
-        e.preventDefault();
-        // calculate the new cursor position:
-        pos1 = pos3 - e.clientX;
-        pos2 = pos4 - e.clientY;
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        let top =
-            elmnt.offsetTop - pos2 < 0
-                ? 0
-                : elmnt.offsetTop - pos2 > document.body.clientHeight - elmnt.clientHeight
-                ? document.body.clientHeight - elmnt.clientHeight
-                : elmnt.offsetTop - pos2;
-        let left =
-            elmnt.offsetLeft - pos1 < 0
-                ? 0
-                : elmnt.offsetLeft - pos1 > document.body.clientWidth - elmnt.clientWidth
-                ? document.body.clientWidth - elmnt.clientWidth
-                : elmnt.offsetLeft - pos1;
-        // set the element's new position:
-
-        elmnt.style.top = top + "px";
-        elmnt.style.left = left + "px";
-        let sc = SHORTCUTS.items.find((s) => s.id === elmnt.id);
-        sc.x = left;
-        sc.y = top;
-        saveShortcut();
-    }
-
-    function closeDragElement() {
-        /* stop moving when mouse button is released:*/
-        document.onmouseup = null;
-        document.onmousemove = null;
-    }
-};
-const showShortcut = () => {
-    document.getElementById("list-shortcut").innerHTML = "";
-    SHORTCUTS.items.forEach((sc) => {
-        let elmnt = document.createElement("div");
-        elmnt.id = sc.id;
-        elmnt.className = "app-icon__item " + SHORTCUTS.size;
-        elmnt.draggable = true;
-        elmnt.style.left =
-            (sc.x > document.body.clientWidth ? document.body.clientWidth - 75 : sc.x) + "px";
-        elmnt.style.top =
-            (sc.y > document.body.clientHeight ? document.body.clientHeight - 75 : sc.y) + "px";
-        if (sc.isHidden) elmnt.style.display = "none";
-        elmnt.innerHTML = `
-                    <div style="position:relative" onmousedown="mousedownInIcon(event,'${sc.id}')">
-                        <div class="icon">
-                            <img src="${
-                                ROOT_PATH_IMAGE_SHORTCUT + sc.iconPath
-                            }" alt="..." onerror="handleImageError(event)" />
-                        </div>
-                        <div class="title">${sc.title}</div>
-                        <div class="options options-${
-                            sc.id
-                        }" onmouseleave="handleOnmouseleaveOptionShortcut('${sc.id}')">
-                            <ul>
-                                <li onclick="openAppByShortcut('${sc.path}')">Mở</li>
-                                <li onclick="showEditShortcutItem('${sc.id}');">Chỉnh sửa</li>
-                                <li>Xoá</li>
-                            </ul>
-                    </div>
-                    </div>`;
-        document.getElementById("list-shortcut").appendChild(elmnt);
-        dragElement(elmnt);
-    });
-};
-const handleInputPath = (event) => {
-    event.target.value = event.target.value
-        .trim()
-        .replaceAll("//", "/")
-        .replaceAll("\\\\", "/")
-        .replaceAll("\\", "/")
-        .replaceAll(/\"/g, "")
-        .replaceAll(/\'/g, "");
-};
-const showEditShortcutItem = (id) => {
-    let item = SHORTCUTS.items.find((item) => item.id === id);
-    Swal.fire({
-        title: "Chỉnh sửa Shortcut",
-        html: `<div class="swal-shortcut-group">
-                <label>Title</label>
-                <input id="swal-input-name" type="text" value="${
-                    item?.title || ""
-                }" placeholder="Your application name">
-            </div>
-            <div class="swal-shortcut-group">
-                <label>Path</label>
-                <input id="swal-input-path" type="text" value="${
-                    item?.path || ""
-                }" placeholder="Your application path" oninput="handleInputPath(event)">
-            </div>
-            <div class="swal-shortcut-group">
-                <label class="icon-label">Icon</label>
-                <img id="shortcut-icon-${item?.id || "new"}" src="${
-            item?.iconPath || DEFAULT_IMAGE_PATH
-        }" width="50"/>
-                <label for="input-change-shortcut-icon" class="change-icon">Change</label>
-                <input id="input-change-shortcut-icon" type="file" accept="image/*" style="display:none" onchange="handleChangeShortcutIcon(this)" >
-            </div>
-        `,
-        preConfirm: () => {
-            if (!document.getElementById("swal-input-name").value)
-                return Swal.showValidationMessage(`Your application name is required`);
-            if (!document.getElementById("swal-input-path").value)
-                return Swal.showValidationMessage(`Your application path is required`);
-            return [
-                document.getElementById("swal-input-name").value,
-                document.getElementById("swal-input-path").value,
-                document
-                    .getElementById("shortcut-icon-" + (item?.id || "new"))
-                    .getAttribute("data-path"),
-            ];
-        },
-        showLoaderOnConfirm: true,
-        showCloseButton: true,
-        showCancelButton: true,
-        confirmButtonText: `Lưu`,
-        cancelButtonText: `Huỷ`,
-        allowOutsideClick: () => !Swal.isLoading(),
-    }).then((result) => {
-        let id = item?.id || customId();
-        if (result.isConfirmed == true) {
-            SHORTCUTS.items.push({
-                id,
-                iconPath: id + ".png",
-                path: result.value[1],
-                title: result.value[0],
-                isHidden: false,
-                x: 500,
-                y: 300,
-            });
-            saveShortcut();
-            Electron_sendData({
-                type: "upload-image",
-                data: {
-                    path: result.value[2],
-                    type: "png",
-                    name: id,
-                },
-                description: "Upload image Shortcut",
-            });
-            setTimeout(() => {
-                showShortcut();
-            }, 500);
-        }
-    });
-};
-
-const handleChangeShortcutIcon = (event) => {
-    let file = event.files[0];
-    console.log(file);
-    document.querySelector(".swal-shortcut-group img").src = URL.createObjectURL(file);
-    document.querySelector(".swal-shortcut-group img").setAttribute("data-path", file.path);
-};
-const mousedownInIcon = (event, id) => {
-    event.preventDefault();
-    if (event.button == 2) {
-        SHORTCUTS.items.forEach((item) => handleOnmouseleaveOptionShortcut(item.id));
-        document.querySelector(".app-icon .options-" + id).classList.contains("active")
-            ? {}
-            : document.querySelector(".app-icon .options-" + id).classList.add("active");
-    }
-};
-const handleOnmouseleaveOptionShortcut = (id) => {
-    document.querySelector(".app-icon .options-" + id)?.classList.remove("active");
-};
-const saveShortcut = () => {
-    localStorage.setItem("shortcuts", JSON.stringify(SHORTCUTS));
-};
-
-showEditShortcutItem();
-const openAppByShortcut = (path) => {
-    electronAPI.openAppByShortcut(path);
-};
-// Get messages
+//Todo: Get messages
 window.addEventListener("message", (event) => {
     if (event.source === window) {
-        // console.log(event.data);
+        //Todo: console.log(event.data);
         switch (event.data.type) {
             case "upload-video":
                 if (event.data?.status === 200) {
@@ -641,10 +412,26 @@ window.addEventListener("message", (event) => {
                     bgState.videoId == videoPathDefault.id ? videoPathDefault.path : elmt?.path
                 );
                 break;
+            case "list-icon":
+                event.data.data.list.forEach((name) => {
+                    let div = document.createElement("div");
+                    div.innerHTML = `<img src="${ROOT_ICO_PATH + name}"
+                     alt="src="${ROOT_ICO_PATH + name}""/>`;
+                    div.onclick = (e) => {
+                        document.querySelector(".swal-shortcut-group img").src =
+                            ROOT_ICO_PATH + name;
+                        document
+                            .querySelector(".swal-shortcut-group img")
+                            .setAttribute("data-path", ROOT_ICO_PATH + name);
+                        setShowSelectShortcutItem(false, true);
+                    };
+                    document.querySelector(".select-image__container").appendChild(div);
+                });
+                break;
             case "remove-video-upload-completed":
                 break;
             default:
-                // console.log(event.data);
+                //Todo: console.log(event.data);
                 break;
         }
     }

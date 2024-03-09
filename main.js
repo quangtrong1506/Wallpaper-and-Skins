@@ -108,7 +108,7 @@ if (!isDev)
     app.setLoginItemSettings({
         openAtLogin: true,
     });
-
+// path: electron.app.getAppPath().replace("resources\\app.asar", "Wallpaper and Skins.exe"),
 /*New Update Available*/
 autoUpdater.on("update-available", (info) => {
     sendLog(`Update available. Current version ${app.getVersion()}`);
@@ -117,8 +117,19 @@ autoUpdater.on("update-available", (info) => {
 
 /*Download Completion Message*/
 
-autoUpdater.on("error", (info) => {});
-autoUpdater.on("update-downloaded", () => {});
-process.on("uncaughtException", function (err) {
-    alert("Error: " + err.message);
+autoUpdater.on("error", (info) => {
+    showNotification({ title: "Auto Updater Error", body: info.message });
 });
+autoUpdater.on("update-downloaded", () => {
+    showNotification({ title: "File Update Downloaded", body: "Please restart the application" });
+});
+process.on("uncaughtException", function (err) {
+    showNotification({ title: "Error", body: err.message });
+});
+
+const showNotification = (options = { title: "Test", body: "" }) => {
+    let notification = new Notification({
+        ...options,
+    });
+    notification.show();
+};

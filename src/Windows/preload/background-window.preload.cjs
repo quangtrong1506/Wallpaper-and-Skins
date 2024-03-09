@@ -20,13 +20,20 @@ contextBridge.exposeInMainWorld("electronAPI", {
     getListVideoDemo: () => {
         ipcRenderer.send("get-list-video-demo");
     },
+    getListImages: () => {
+        ipcRenderer.send("get-list-icon");
+    },
     removeVideoUpload: (id) => {
         ipcRenderer.send("remove-video-upload", id);
+    },
+    removeImageUpload: (id) => {
+        ipcRenderer.send("remove-image-upload", id);
     },
     openAppByShortcut: (path) => {
         ipcRenderer.send("open-app", path);
     },
 });
+
 ipcRenderer.on("upload-video-completed", (event, data) => {
     if (data)
         window.postMessage(
@@ -50,9 +57,21 @@ ipcRenderer.on("list-video-bg", (event, data) => {
         );
 });
 
+ipcRenderer.on("list-icon", (event, data) => {
+    if (data)
+        window.postMessage(
+            {
+                type: "list-icon",
+                data: data,
+            },
+            "*"
+        );
+});
+
 ipcRenderer.on("log", (event, data) => {
     console.log(data);
 });
+
 ipcRenderer.on("lock-screen", (event, data) => {
     window.postMessage(
         {
@@ -62,6 +81,7 @@ ipcRenderer.on("lock-screen", (event, data) => {
         "*"
     );
 });
+
 ipcRenderer.on("remove-video-upload-completed", (event, data) => {
     window.postMessage(
         {

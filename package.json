@@ -1,7 +1,7 @@
 {
     "name": "wallpaper_and_skins",
-    "version": "1.0.1",
-    "description": "Live Wallpaper and cute shins for computers",
+    "version": "1.0.2",
+    "description": "Live Wallpaper and cute skins for computers",
     "main": "main.js",
     "productName": "Wallpaper and Skins",
     "scripts": {

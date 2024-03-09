@@ -1,6 +1,13 @@
 import electron from "electron";
 import path from "path";
-import { listFiles, removeVideoById, saveImage, saveVideo } from "../Windows/utils/save-file.js";
+import {
+    listFiles,
+    listImages,
+    removeImageById,
+    removeVideoById,
+    saveImage,
+    saveVideo,
+} from "../Windows/utils/save-file.js";
 const { ipcMain, powerMonitor, shell } = electron;
 const ipcMainEvents = (mainWindow) => {
     // ipcMain.on('set-notification', getNotificationInPreload);
@@ -41,6 +48,10 @@ const ipcMainEvents = (mainWindow) => {
             mainWindow.webContents.send("log", result);
         }
     });
+    ipcMain.on("remove-image-upload", async (event, id) => {
+        const result = await removeImageById(id);
+        mainWindow.webContents.send("log", result);
+    });
     ipcMain.on("log", async (event, data) => {
         mainWindow.webContents.send("log", data);
     });
@@ -50,6 +61,11 @@ const ipcMainEvents = (mainWindow) => {
     ipcMain.on("get-list-video-demo", async (event, data) => {
         mainWindow.webContents.send("list-video-bg", {
             list: listFiles(),
+        });
+    });
+    ipcMain.on("get-list-icon", async (event, data) => {
+        mainWindow.webContents.send("list-icon", {
+            list: listImages(),
         });
     });
     powerMonitor.on("lock-screen", () => {
