@@ -89,7 +89,7 @@ const listFiles = () => {
     return list;
 };
 const listImages = () => {
-    const list = fse.readdirSync(path.join(__dirname, `${PATH}/images/icons/`));
+    const list = fse.readdirSync(path.join(electron.app.getAppPath(), `/src/assets/images/icons/`));
     return list;
 };
 export { listFiles, listImages, removeImageById, removeVideoById, saveImage, saveVideo };

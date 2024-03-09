@@ -12,15 +12,12 @@ const DEFAULT_IMAGE_PATH = "../../assets/images/logo.png";
 const isDev = localStorage.getItem("isDev");
 const listVideoShow = [];
 const rootPathVideo = isDev ? "../../assets/videos/" : "../../../../videos/";
-const ROOT_ICO_PATH = isDev ? "../../assets/images/icons/" : "../../../../images/icons/";
+const ROOT_ICO_PATH = isDev ? "../../assets/images/icons/" : "../../assets/images/icons/";
 
 const customId = () => {
     let id = new Date().getTime();
     return id.toString();
 };
-if (isDev) {
-    console.log("Hi! Developer");
-}
 //Load lần đầu chạy app
 window.onload = () => {
     document.querySelector("body.swal2-height-auto")?.classList.remove("swal2-height-auto");
@@ -149,7 +146,6 @@ const showMenuChangeVideo = (state) => {
 //Todo: Upload
 const uploadVideoChangeEvent = (event) => {
     if (!event.files[0]) return;
-    console.log(event.files[0].path);
     //Todo: document.querySelector('.video-name').innerHTML = event.files[0].name;
     let src = URL.createObjectURL(event.files[0]);
     bgState.videoUpload = event.files[0];
@@ -197,7 +193,6 @@ const saveNewVideo = () => {
 };
 //Todo: khi video background bị lỗi
 const videoPathError = () => {
-    console.error(bgState);
     bgState.videoId = videoPathDefault.id;
     saveBgSate();
     setNewPathVideoBackground(videoPathDefault.path);
@@ -368,7 +363,6 @@ const Electron_sendData = (
 //Todo: Get messages
 window.addEventListener("message", (event) => {
     if (event.source === window) {
-        //Todo: console.log(event.data);
         switch (event.data.type) {
             case "upload-video":
                 if (event.data?.status === 200) {
@@ -416,7 +410,7 @@ window.addEventListener("message", (event) => {
                 event.data.data.list.forEach((name) => {
                     let div = document.createElement("div");
                     div.innerHTML = `<img src="${ROOT_ICO_PATH + name}"
-                     alt="src="${ROOT_ICO_PATH + name}""/>`;
+                     alt="${ROOT_ICO_PATH + name}"/>`;
                     div.onclick = (e) => {
                         document.querySelector(".swal-shortcut-group img").src =
                             ROOT_ICO_PATH + name;
@@ -431,7 +425,6 @@ window.addEventListener("message", (event) => {
             case "remove-video-upload-completed":
                 break;
             default:
-                //Todo: console.log(event.data);
                 break;
         }
     }

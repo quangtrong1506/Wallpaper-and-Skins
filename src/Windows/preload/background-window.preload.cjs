@@ -2,7 +2,6 @@ const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("electronAPI", {
     viewToBackGround: (data) => {
-        console.log(data);
         switch (data.type) {
             case "upload-video":
                 ipcRenderer.send("upload-video", data.data);

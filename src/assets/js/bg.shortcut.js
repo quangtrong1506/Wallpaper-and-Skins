@@ -145,6 +145,7 @@ const handleInputPath = (event) => {
 };
 //Todo: Thêm mới hoặc chỉnh sửa shortcut
 const showEditShortcutItem = (id) => {
+    showMenu(false);
     let item = SHORTCUTS.items.find((item) => item.id === id);
     Swal.fire({
         title: `${item ? text.text_edit : text.text_add_new} Shortcut`,
@@ -204,7 +205,6 @@ const showEditShortcutItem = (id) => {
         cancelButtonText: text.text_cancel,
         allowOutsideClick: () => !Swal.isLoading(),
     }).then((result) => {
-        console.log(result);
         let newIconId = customId();
         let id = item?.id || newIconId;
         if (result.isConfirmed == true) {
@@ -261,7 +261,6 @@ const showEditShortcutItem = (id) => {
 //Todo: sự kiện khi upload image(icon)
 const handleChangeShortcutIcon = (event) => {
     let file = event.files[0];
-    console.log(file);
     document.querySelector(".swal-shortcut-group img").src = URL.createObjectURL(file);
     document.querySelector(".swal-shortcut-group img").setAttribute("data-path", file.path);
 };
