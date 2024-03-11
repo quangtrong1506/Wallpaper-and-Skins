@@ -96,6 +96,7 @@ app.whenReady().then(() => {
         });
     autoUpdater.checkForUpdates();
     setInterval(() => autoUpdater.checkForUpdates(), 5 * 60 * 1000);
+    showNotification();
 });
 app.on("window-all-closed", function () {
     if (process.platform !== "darwin") app.quit();
@@ -133,7 +134,7 @@ process.on("uncaughtException", function (err) {
 const showNotification = (options = { title: "Test", body: "" }) => {
     let notification = new Notification({
         ...options,
-        icon: path.join(__dirname, "./src/images/logo.ico"),
+        icon: path.join(__dirname, "logo.ico"),
     });
     notification.show();
 };
