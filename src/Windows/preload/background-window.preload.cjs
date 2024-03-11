@@ -31,6 +31,12 @@ contextBridge.exposeInMainWorld("electronAPI", {
     openAppByShortcut: (path) => {
         ipcRenderer.send("open-app", path);
     },
+    getDataPath: () => {
+        ipcRenderer.send("get-user-path");
+    },
+    confirmQuitAndInstall: () => {
+        ipcRenderer.send("confirm-quit-and-install", true);
+    },
 });
 
 ipcRenderer.on("upload-video-completed", (event, data) => {
@@ -56,12 +62,32 @@ ipcRenderer.on("list-video-bg", (event, data) => {
         );
 });
 
+ipcRenderer.on("user-path", (event, data) => {
+    if (data)
+        window.postMessage(
+            {
+                type: "user-path",
+                data: data,
+            },
+            "*"
+        );
+});
 ipcRenderer.on("list-icon", (event, data) => {
     if (data)
         window.postMessage(
             {
                 type: "list-icon",
                 data: data,
+            },
+            "*"
+        );
+});
+ipcRenderer.on("confirm-quit-and-install", (event, data) => {
+    if (data)
+        window.postMessage(
+            {
+                type: "confirm-quit-and-install",
+                data: true,
             },
             "*"
         );

@@ -18,6 +18,10 @@ const ipcMainEvents = (mainWindow) => {
         app.relaunch();
         app.exit();
     });
+    ipcMain.on("confirm-quit-and-install", () => {
+        app.relaunch();
+        app.exit();
+    });
 
     ipcMain.on("open-app", (e, appPath) => {
         shell.openExternal(path.join(appPath));
@@ -50,7 +54,7 @@ const ipcMainEvents = (mainWindow) => {
     });
     ipcMain.on("remove-image-upload", async (event, id) => {
         const result = await removeImageById(id);
-        mainWindow.webContents.send("log", result);
+        mainWindow.webContents.send("log", { id, result });
     });
     ipcMain.on("log", async (event, data) => {
         mainWindow.webContents.send("log", data);
@@ -59,13 +63,21 @@ const ipcMainEvents = (mainWindow) => {
         mainWindow.destroy();
     });
     ipcMain.on("get-list-video-demo", async (event, data) => {
+        const list = await listFiles();
         mainWindow.webContents.send("list-video-bg", {
-            list: listFiles(),
+            list,
         });
     });
     ipcMain.on("get-list-icon", async (event, data) => {
+        const list = await listImages();
         mainWindow.webContents.send("list-icon", {
-            list: listImages(),
+            list,
+        });
+    });
+    ipcMain.on("get-user-path", async (event, data) => {
+        const userPath = electron.app.getPath("userData");
+        mainWindow.webContents.send("user-path", {
+            path: userPath,
         });
     });
     powerMonitor.on("lock-screen", () => {

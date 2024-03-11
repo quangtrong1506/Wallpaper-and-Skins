@@ -1,25 +1,21 @@
 import { randomUUID } from "crypto";
 import electron, { Notification } from "electron";
-import isDev from "electron-is-dev";
 import fse from "fs-extra";
 import path from "path";
-const PATH = isDev ? "./src/assets" : "./resources";
-// const __dirname = path.resolve();
-const __dirname = electron.app.getAppPath().replace("\\resources\\app.asar", "");
-const showNotification = (options = { title: "Test", body: "" }) => {
+const userPath = electron.app.getPath("userData");
+const showNotification = (options = { title: "Test", body: "Thông báo từ admin" }) => {
     let notification = new Notification({
         ...options,
-        icon: path.join(__dirname, PATH + "/images/logo.ico"),
     });
     notification.show();
 };
 const saveVideo = async (data, name = randomUUID()) => {
     let fileType = data.type?.split("/")[1] || "mp4";
     try {
-        await fse.copy(data.path, path.join(__dirname, `${PATH}/videos/${name}.${fileType}`));
+        await fse.copy(data.path, path.join(userPath, `/assets/videos/${name}.${fileType}`));
         return {
             id: name,
-            path: `${PATH}/videos/${name}.${fileType}`,
+            path: path.join(userPath, `/assets/videos/${name}.${fileType}`),
             isSuccess: true,
         };
     } catch (error) {
@@ -33,18 +29,18 @@ const saveImage = async (data, name = randomUUID()) => {
     try {
         if (fileType === "base64") {
             const buffer = Buffer.from(data.path, "base64");
-            const check = await fse.pathExists(path.join(__dirname, `${PATH}/images/shortcut/`));
-            if (!check) await fse.ensureDir(path.join(__dirname, `${PATH}/images/shortcut/`));
+            const check = await fse.pathExists(path.join(userPath, `/assets/images/shortcut/`));
+            if (!check) await fse.ensureDir(path.join(userPath, `/assets/images/shortcut/`));
             await fse.writeFile(
-                path.join(__dirname, `${PATH}/images/shortcut/${name}.png`),
+                path.join(userPath, `/assets/images/shortcut/${name}.png`),
                 buffer,
                 { flag: "w+" }
             );
         } else
-            await fse.copy(data.path, path.join(__dirname, `${PATH}/images/shortcut/${name}.png`));
+            await fse.copy(data.path, path.join(userPath, `/assets/images/shortcut/${name}.png`));
         return {
             id: name,
-            path: `${PATH}/images/shortcut/${name}.png`,
+            path: `/assets/images/shortcut/${name}.png`,
             isSuccess: true,
         };
     } catch (error) {
@@ -53,16 +49,14 @@ const saveImage = async (data, name = randomUUID()) => {
         return error;
     }
 };
-let idInterval = null;
 const removeVideoById = async (id) => {
     let fileName = id + ".mp4";
     try {
-        await fse.remove(path.join(__dirname, `${PATH}/videos/${fileName}`));
-        if (idInterval) clearInterval(idInterval);
+        await fse.remove(path.join(userPath, `/assets/videos/${fileName}`));
         return true;
     } catch (error) {
         if (error.code === "EBUSY")
-            idInterval = setInterval(() => {
+            setTimeout(() => {
                 removeVideoById(id);
             }, 5000);
         console.log(error);
@@ -72,22 +66,32 @@ const removeVideoById = async (id) => {
 const removeImageById = async (id) => {
     let fileName = id + ".png";
     try {
-        await fse.remove(path.join(__dirname, `${PATH}/images/shortcut/${fileName}`));
-        if (idInterval) clearInterval(idInterval);
+        await fse.remove(path.join(userPath, `/assets/images/shortcut/${fileName}`));
         return true;
     } catch (error) {
         if (error.code === "EBUSY")
-            idInterval = setInterval(() => {
+            setTimeout(() => {
                 removeVideoById(id);
             }, 5000);
         console.log(error);
         return error;
     }
 };
-const listFiles = () => {
-    const list = fse.readdirSync(path.join(__dirname, `${PATH}/videos/`));
+// Danh sách video đã tải lên
+const listFiles = async () => {
+    const check = await fse.pathExists(path.join(userPath, `/assets/videos/`));
+    if (!check) await fse.ensureDir(path.join(userPath, `/assets/videos/`));
+    let files = fse.readdirSync(path.join(userPath, `/assets/videos/`));
+    const list = [];
+    files.forEach((file) => {
+        list.push({
+            id: file.split(".")[0],
+            path: path.join(userPath, `/assets/videos/` + file),
+        });
+    });
     return list;
 };
+// Danh sách ảnh (icon shortcut) có sẵn
 const listImages = () => {
     const list = fse.readdirSync(path.join(electron.app.getAppPath(), `/src/assets/images/icons/`));
     return list;

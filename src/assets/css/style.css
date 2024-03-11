@@ -388,6 +388,21 @@ body {
 .app-icon .app-icon__item.xxl {
     width: var(--w-xxl);
 }
+.app-icon .app-icon__item.sm .icon {
+    height: calc(var(--w-sm) * 0.8);
+}
+.app-icon .app-icon__item.md .icon {
+    height: calc(var(--w-md) * 0.8);
+}
+.app-icon .app-icon__item.lg .icon {
+    height: calc(var(--w-lg) * 0.8);
+}
+.app-icon .app-icon__item.xl .icon {
+    height: calc(var(--w-xl) * 0.8);
+}
+.app-icon .app-icon__item.xxl .icon {
+    height: calc(var(--w-xxl) * 0.8);
+}
 
 .app-icon .app-icon__item.lg .title,
 .app-icon .app-icon__item.xl .title {
@@ -399,6 +414,7 @@ body {
 .app-icon .app-icon__item .icon {
     width: 80%;
     margin: 0 auto;
+    overflow: hidden;
 }
 .app-icon .app-icon__item img {
     width: 100%;

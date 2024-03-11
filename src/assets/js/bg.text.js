@@ -54,6 +54,8 @@ const vi = {
     text_upload: "Tải lên",
     text_select: "Chọn",
     text_auto_sort: "Tự động sắp xếp",
+    text_the_video_has_been_uploaded_successfully: "Video đã được tải lên thành công",
+    text_confirm_exit_and_install_the_application: "Xác nhận thoát và cài đặt ứng dụng",
 };
 const en = {
     text_menu_video_play: "Play video",
@@ -102,6 +104,8 @@ const en = {
     text_upload: "Upload",
     text_select: "Select",
     text_auto_sort: "Auto sort",
+    text_the_video_has_been_uploaded_successfully: "The video has been uploaded successfully",
+    text_confirm_exit_and_install_the_application: "Confirm exit and install the application",
 };
 let text = vi;
 const setMainLanguage = () => {

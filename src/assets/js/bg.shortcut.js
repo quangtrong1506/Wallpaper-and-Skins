@@ -100,6 +100,7 @@ const dragElement = (elmnt) => {
 };
 //Todo: Hiện tất cả shortcut
 const showShortcut = () => {
+    if (!user_path) return;
     document.getElementById("list-shortcut").innerHTML = "";
     SHORTCUTS.items.forEach((sc) => {
         let elmnt = document.createElement("div");
@@ -114,9 +115,12 @@ const showShortcut = () => {
                     <div style="position:relative" ondblclick="openAppByShortcut('${
                         sc.path
                     }')" onmousedown="mousedownInIcon(event,'${sc.id}')">
-                        <div class="icon">
+                        <div class="icon" >
                             <img src="${
-                                ROOT_PATH_IMAGE_SHORTCUT + sc.iconId + ".png"
+                                user_path.replaceAll("\\", "/") +
+                                "/assets/images/shortcut/" +
+                                sc.iconId +
+                                ".png"
                             }" alt="..." onerror="handleImageError(event)" />
                         </div>
                         <div class="title">${sc.title}</div>
@@ -234,6 +238,7 @@ const showEditShortcutItem = (id) => {
             saveShortcut();
             setTimeout(() => {
                 if (SHORTCUTS.isAutoSort) sortShortcut();
+                else showShortcut();
             }, 500);
 
             let canvas = document.createElement("canvas");
@@ -299,11 +304,12 @@ const deleteShortcut = (id) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
             // Swal.fire("Saved!", "", "success");
+            let iID = SHORTCUTS.items.find((item) => item.id == id).iconId || -1;
             let item = SHORTCUTS.items.splice(
                 SHORTCUTS.items.findIndex((item) => item.id == id),
                 1
             );
-            electronAPI.removeImageUpload(item.iconId);
+            electronAPI.removeImageUpload(iID);
             saveShortcut();
             showShortcut();
         }
@@ -434,7 +440,6 @@ const sortShortcut = () => {
     showShortcut();
 };
 const setAutoSort = (state) => {
-    console.log(state);
     SHORTCUTS.isAutoSort = state;
     saveShortcut();
     showSelectSizeShortcut();

@@ -2,24 +2,31 @@ const videoPathDefault = {
     path: "../../assets/videos/bg-default.mp4",
     id: "bg-default",
 };
-let bgState = {
-    isPlay: true,
-    videoUpload: null,
-    videoId: videoPathDefault.id,
-    videoIdSelect: null,
-};
+
+let user_path = null;
 const DEFAULT_IMAGE_PATH = "../../assets/images/logo.png";
 const isDev = localStorage.getItem("isDev");
 const listVideoShow = [];
 const rootPathVideo = isDev ? "../../assets/videos/" : "../../../../videos/";
 const ROOT_ICO_PATH = isDev ? "../../assets/images/icons/" : "../../assets/images/icons/";
-
+const ROOT_BG_START = {
+    isPlay: true,
+    videoUpload: null,
+    videoId: videoPathDefault.id,
+    videoIdSelect: null,
+};
+let bgState = { ...ROOT_BG_START };
 const customId = () => {
     let id = new Date().getTime();
     return id.toString();
 };
 //Load lần đầu chạy app
 window.onload = () => {
+    if (!localStorage.getItem("isWeb")) {
+        electronAPI?.getDataPath();
+        electronAPI?.getListVideoDemo();
+        electronAPI?.getListImages();
+    }
     document.querySelector("body.swal2-height-auto")?.classList.remove("swal2-height-auto");
     setMainLanguage();
     //Add event
@@ -45,10 +52,6 @@ window.onload = () => {
     } else SHORTCUTS.items = [];
     showShortcut();
     showSelectSizeShortcut();
-    if (!localStorage.getItem("isWeb")) {
-        electronAPI?.getListVideoDemo();
-        electronAPI?.getListImages();
-    }
 };
 const handleImageError = (event) => {
     if (!event.target.src.match("logo")) event.target.src = DEFAULT_IMAGE_PATH;
@@ -137,7 +140,7 @@ const showMenuChangeVideo = (state) => {
         document.getElementById("video-demo-upload").src =
             bgState.videoId == videoPathDefault.id
                 ? videoPathDefault.path
-                : rootPathVideo + bgState.videoId + ".mp4";
+                : user_path + "/assets/videos/" + bgState.videoId + ".mp4";
         setActiveVideoDemo(
             bgState.videoId == videoPathDefault.id ? videoPathDefault.id : bgState.videoId
         );
@@ -188,7 +191,7 @@ const saveNewVideo = () => {
     setNewPathVideoBackground(
         bgState.videoId === videoPathDefault.id
             ? videoPathDefault.path
-            : rootPathVideo + bgState.videoId + ".mp4"
+            : user_path + "/assets/videos/" + bgState.videoId + ".mp4"
     );
     saveBgSate();
 };
@@ -213,7 +216,7 @@ const resetVideoBackground = () => {
         allowOutsideClick: false,
     }).then((result) => {
         if (result.isConfirmed) {
-            bgState.videoId = videoPathDefault.id;
+            bgState = ROOT_BG_START;
             saveBgSate();
             showMenu(false);
             showMenuChangeVideo(false);
@@ -366,18 +369,19 @@ const Electron_sendData = (
 let SHORTCUT_API_PAGE = 1;
 const SHORTCUT_API_LIMIT = 20;
 window.addEventListener("message", (event) => {
+    console.log(event.data);
     if (event.source === window) {
         switch (event.data.type) {
             case "upload-video":
                 if (event.data?.status === 200) {
-                    Swal.fire("Tải video lên thành công", "", "success");
+                    Swal.fire(text.text_the_video_has_been_uploaded_successfully, "", "success");
                     addVideoShow({
                         id: event.data.data.id,
-                        path: rootPathVideo + event.data.data.id + ".mp4",
+                        path: event.data.data.path,
                     });
                     listVideoShow.push({
                         id: event.data.data.id,
-                        path: rootPathVideo + event.data.data.id + ".mp4",
+                        path: event.data.data.path,
                         isActive: false,
                     });
                     setActiveVideoDemo(event.data.data.id);
@@ -392,12 +396,11 @@ window.addEventListener("message", (event) => {
                 else if (bgState.isPlay === true) playVideo(true);
                 break;
             case "list-video":
-                event.data.data.list.forEach((name) => {
-                    let id = name.split(".")[0];
-                    if (id != videoPathDefault.id)
+                event.data.data.list.forEach((video) => {
+                    if (video.id != videoPathDefault.id)
                         listVideoShow.push({
-                            id,
-                            path: rootPathVideo + name,
+                            id: video.id,
+                            path: video.path,
                         });
                 });
                 listVideoShow.forEach((video) => {
@@ -429,6 +432,21 @@ window.addEventListener("message", (event) => {
                 showButtonAdd();
                 break;
             case "remove-video-upload-completed":
+                break;
+            case "user-path":
+                user_path = event.data.data.path;
+                showShortcut();
+                break;
+            case "confirm-quit-and-install":
+                Swal.fire({
+                    title: text.text_confirm_exit_and_install_the_application,
+                    showCancelButton: true,
+                    confirmButtonText: "Quit Application",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        electronAPI.confirmQuitAndInstall();
+                    }
+                });
                 break;
             default:
                 break;

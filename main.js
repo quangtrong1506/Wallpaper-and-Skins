@@ -96,7 +96,6 @@ app.whenReady().then(() => {
         });
     autoUpdater.checkForUpdates();
     setInterval(() => autoUpdater.checkForUpdates(), 5 * 60 * 1000);
-    showNotification();
 });
 app.on("window-all-closed", function () {
     if (process.platform !== "darwin") app.quit();
@@ -113,7 +112,9 @@ if (!isDev)
 /*New Update Available*/
 autoUpdater.on("update-available", (info) => {
     showNotification({
-        body: `Update available. Current version ${app.getVersion()}`,
+        body: `Update available. Current version ${app.getVersion()}, Latest version ${
+            info.version
+        }`,
         title: "Notifications",
     });
     autoUpdater.downloadUpdate();
@@ -125,16 +126,25 @@ autoUpdater.on("error", (info) => {
     showNotification({ title: "Auto Updater Error", body: info.message });
 });
 autoUpdater.on("update-downloaded", () => {
-    showNotification({ title: "File Update Downloaded", body: "Please restart the application" });
+    showNotification(
+        { title: "File Update Downloaded", body: "Please restart the application" },
+        () => {
+            WINDOWS.backgroundWindow.webContents.send("confirm-quit-and-install");
+        }
+    );
 });
 process.on("uncaughtException", function (err) {
     showNotification({ title: "Error", body: err.message });
 });
 
-const showNotification = (options = { title: "Test", body: "" }) => {
+const showNotification = (options = { title: "Test", body: "" }, onClick = () => {}) => {
     let notification = new Notification({
         ...options,
         icon: path.join(__dirname, "logo.ico"),
+        click: () => {
+            onClick();
+        },
     });
+
     notification.show();
 };
