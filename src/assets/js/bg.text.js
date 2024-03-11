@@ -53,6 +53,7 @@ const vi = {
     text_xxl: "Lớn cực đại",
     text_upload: "Tải lên",
     text_select: "Chọn",
+    text_auto_sort: "Tự động sắp xếp",
 };
 const en = {
     text_menu_video_play: "Play video",
@@ -100,6 +101,7 @@ const en = {
     text_xxl: "Extra Extra Large",
     text_upload: "Upload",
     text_select: "Select",
+    text_auto_sort: "Auto sort",
 };
 let text = vi;
 const setMainLanguage = () => {

@@ -25,6 +25,7 @@ const SHORTCUT_SIZE = [
 ];
 const SHORTCUTS = {
     size: "sm",
+    isAutoSort: true,
     items: [
         {
             id: null,
@@ -232,7 +233,7 @@ const showEditShortcutItem = (id) => {
             }
             saveShortcut();
             setTimeout(() => {
-                showShortcut();
+                if (SHORTCUTS.isAutoSort) sortShortcut();
             }, 500);
 
             let canvas = document.createElement("canvas");
@@ -329,6 +330,21 @@ const showSelectSizeShortcut = () => {
         });
         document.querySelector(".menu-shortcut-size").appendChild(element);
     });
+    let sortElement = document.createElement("div");
+    sortElement.className = "menu__item menu__item-sort-f";
+    sortElement.innerHTML = `
+        <label class="${1}">${text.text_auto_sort}</label>
+        <span class="${SHORTCUTS.isAutoSort ? "checked" : ""} right-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                <path
+                    d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"
+                />
+            </svg>
+        </span>`;
+    sortElement.addEventListener("click", () => {
+        setAutoSort(!SHORTCUTS.isAutoSort);
+    });
+    document.querySelector(".menu-shortcut-size").appendChild(sortElement);
 };
 
 //Todo: set kích thước của shortcut
@@ -337,7 +353,7 @@ const setShortcutSize = (size) => {
     SHORTCUTS.size = size;
     saveShortcut();
     showSelectSizeShortcut();
-    showShortcut();
+    if (SHORTCUTS.isAutoSort) sortShortcut();
 };
 //Todo: Hiện menu chỉnh sửa size shortcut
 const showMenuShortcutSize = (state) => {
@@ -361,4 +377,67 @@ const setShowSelectShortcutItem = (state, event) => {
         document.querySelector(".select-image").classList.add("active");
     else if (event === true || event?.target.classList.contains("select-image"))
         document.querySelector(".select-image").classList.remove("active");
+};
+
+// Sắp xếp
+// 75 x 95
+// 100 x 120
+// 125 x 150
+// 150 x 170
+// 175 x 200
+const sortShortcut = () => {
+    const sizes = {
+        sm: {
+            w: 75,
+            h: 95,
+        },
+        md: {
+            w: 100,
+            h: 120,
+        },
+        lg: {
+            w: 125,
+            h: 150,
+        },
+        xl: {
+            w: 150,
+            h: 170,
+        },
+        xxl: {
+            w: 175,
+            h: 200,
+        },
+    };
+    const screenHeight = document.body.clientHeight;
+    const screenWidth = screen.width;
+    const size = SHORTCUTS.size;
+    const itemSize = sizes[size];
+    SHORTCUTS.items.sort((a, b) => a.title.localeCompare(b.title));
+    let row = 1;
+    let col = 1;
+    const space = 10;
+    for (let i = 0; i < SHORTCUTS.items.length; i++) {
+        const element = SHORTCUTS.items[i];
+        let x = (col - 1) * itemSize.w + (col - 1) * space;
+        let y = (row - 1) * itemSize.h + (row - 1) * space;
+        if (y + itemSize.h > screenHeight) {
+            col++;
+            row = 1;
+            x = (col - 1) * itemSize.w + (col - 1) * space;
+            y = (row - 1) * itemSize.h + (row - 1) * space;
+        }
+        element.x = x;
+        element.y = y;
+        row++;
+    }
+    saveShortcut();
+    showShortcut();
+};
+const setAutoSort = (state) => {
+    console.log(state);
+    SHORTCUTS.isAutoSort = state;
+    saveShortcut();
+    showSelectSizeShortcut();
+    if (state === true) sortShortcut();
+    // showMenu(false);
 };

@@ -41,6 +41,7 @@ window.onload = () => {
         let shortcuts = JSON.parse(localStorage.getItem("shortcuts"));
         SHORTCUTS.size = shortcuts.size;
         SHORTCUTS.items = shortcuts.items;
+        SHORTCUTS.isAutoSort = shortcuts.isAutoSort;
     } else SHORTCUTS.items = [];
     showShortcut();
     showSelectSizeShortcut();
@@ -361,6 +362,9 @@ const Electron_sendData = (
 //Todo: showMenuChangeVideo(true);
 
 //Todo: Get messages
+
+let SHORTCUT_API_PAGE = 1;
+const SHORTCUT_API_LIMIT = 20;
 window.addEventListener("message", (event) => {
     if (event.source === window) {
         switch (event.data.type) {
@@ -409,6 +413,7 @@ window.addEventListener("message", (event) => {
             case "list-icon":
                 event.data.data.list.forEach((name) => {
                     let div = document.createElement("div");
+                    div.classList = "item";
                     div.innerHTML = `<img src="${ROOT_ICO_PATH + name}"
                      alt="${ROOT_ICO_PATH + name}"/>`;
                     div.onclick = (e) => {
@@ -419,8 +424,9 @@ window.addEventListener("message", (event) => {
                             .setAttribute("data-path", ROOT_ICO_PATH + name);
                         setShowSelectShortcutItem(false, true);
                     };
-                    document.querySelector(".select-image__container").appendChild(div);
+                    document.querySelector(".select-image__container div").appendChild(div);
                 });
+                showButtonAdd();
                 break;
             case "remove-video-upload-completed":
                 break;
@@ -429,3 +435,52 @@ window.addEventListener("message", (event) => {
         }
     }
 });
+const showButtonAdd = () => {
+    let div = document.createElement("div");
+    div.classList = "item";
+    div.onclick = () => {
+        div.remove();
+        showButtonLoading();
+        fetch(
+            `https://wallpaper-and-skin-image-backend.vercel.app/images?limit=${SHORTCUT_API_LIMIT}&page=${SHORTCUT_API_PAGE}`,
+            {
+                method: "GET",
+                redirect: "follow",
+            }
+        )
+            .then((response) => response.json())
+            .then((result) => {
+                showButtonLoading(false);
+                result.data.data.forEach((img) => {
+                    let div = document.createElement("div");
+                    div.classList = "item";
+                    div.innerHTML = `<img src="${img.url}"
+                     alt="${img.url}"/>`;
+                    div.onclick = (e) => {
+                        document.querySelector(".swal-shortcut-group img").src = img.url;
+                        document
+                            .querySelector(".swal-shortcut-group img")
+                            .setAttribute("data-path", img.url);
+                        setShowSelectShortcutItem(false, true);
+                    };
+                    document.querySelector(".select-image__container div").appendChild(div);
+                });
+                if (SHORTCUT_API_LIMIT * SHORTCUT_API_PAGE < result.data.total) {
+                    showButtonAdd();
+                    SHORTCUT_API_PAGE++;
+                }
+            })
+            .catch((error) => console.error(error));
+    };
+    div.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/></svg>`;
+    document.querySelector(".select-image__container div").appendChild(div);
+};
+const showButtonLoading = (state) => {
+    if (state === false)
+        return document.querySelector(".select-image__container div").lastElementChild.remove();
+    let div = document.createElement("div");
+    div.classList = "item";
+    div.style.padding = "10px";
+    div.innerHTML = `<span class="loader"></span>`;
+    document.querySelector(".select-image__container div").appendChild(div);
+};
