@@ -171,10 +171,20 @@ const showEditShortcutItem = (id) => {
                 <label class="icon-label">Icon</label>
                 <img id="shortcut-icon-${item?.id || "new"}" 
                  src="${
-                     item ? ROOT_PATH_IMAGE_SHORTCUT + item.iconId + ".png" : DEFAULT_IMAGE_PATH
+                     item
+                         ? user_path.replaceAll("\\", "/") +
+                           "/assets/images/shortcut/" +
+                           item.iconId +
+                           ".png"
+                         : DEFAULT_IMAGE_PATH
                  }" 
                  data-path="${
-                     item ? ROOT_PATH_IMAGE_SHORTCUT + item.iconId + ".png" : DEFAULT_IMAGE_PATH
+                     item
+                         ? user_path.replaceAll("\\", "/") +
+                           "/assets/images/shortcut/" +
+                           item.iconId +
+                           ".png"
+                         : DEFAULT_IMAGE_PATH
                  }"
                  />
                 <div>
