@@ -462,7 +462,7 @@ const showButtonAdd = () => {
         div.remove();
         showButtonLoading();
         fetch(
-            `https://wallpaper-and-skin-image-backend.vercel.app/images?limit=${SHORTCUT_API_LIMIT}&page=${SHORTCUT_API_PAGE}`,
+            `https://wallpaper-and-skin-image-backend.vercel.app/images?limit=${SHORTCUT_API_LIMIT}&page=${SHORTCUT_API_PAGE}&sort=1`,
             {
                 method: "GET",
                 redirect: "follow",
