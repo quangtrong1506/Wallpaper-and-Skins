@@ -137,14 +137,13 @@ process.on("uncaughtException", function (err) {
     showNotification({ title: "Error", body: err.message });
 });
 
-const showNotification = (options = { title: "Test", body: "" }, onClick = () => {}) => {
+const showNotification = (options = { title: "Test", body: "" }, onClick) => {
     let notification = new Notification({
         ...options,
         icon: path.join(__dirname, "logo.ico"),
-        click: () => {
-            onClick();
-        },
     });
-
     notification.show();
+    notification.on("click", (event, arg) => {
+        if (onClick) onClick();
+    });
 };

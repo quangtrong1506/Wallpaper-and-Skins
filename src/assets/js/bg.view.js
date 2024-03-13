@@ -49,6 +49,7 @@ window.onload = () => {
         SHORTCUTS.size = shortcuts.size;
         SHORTCUTS.items = shortcuts.items;
         SHORTCUTS.isAutoSort = shortcuts.isAutoSort;
+        if (SHORTCUTS.isAutoSort) sortShortcut();
     } else SHORTCUTS.items = [];
     showShortcut();
     showSelectSizeShortcut();
@@ -76,7 +77,6 @@ const mousedownEvent = (event) => {
 window.addEventListener("contextmenu", (e) => e.preventDefault());
 //- End Mouse events
 
-//Todo: Menu
 const showMenu = (state, x = 0, y = 0) => {
     closeAllMenuLevel2();
     let bodyState = {
@@ -134,6 +134,7 @@ const changeStateVideo = () => {
 };
 //Mở memu lựa chọn video
 const showMenuChangeVideo = (state) => {
+    showMenuChangeVideo(false);
     if (state === true || state === undefined) {
         if (!document.querySelector(".change-video").classList.contains("active"))
             document.querySelector(".change-video").classList.add("active");
