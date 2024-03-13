@@ -82,7 +82,9 @@ ipcRenderer.on("list-icon", (event, data) => {
             "*"
         );
 });
-ipcRenderer.on("confirm-quit-and-install", (event, data) => {
+ipcRenderer.on("confirm-quit-and-install-from-main", (event, data) => {
+    console.log("Mapping");
+    console.log(data);
     if (data)
         window.postMessage(
             {

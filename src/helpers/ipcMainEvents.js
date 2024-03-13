@@ -1,4 +1,4 @@
-import electron from "electron";
+import electron, { app } from "electron";
 import path from "path";
 import {
     listFiles,

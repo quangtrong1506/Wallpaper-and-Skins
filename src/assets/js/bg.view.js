@@ -439,6 +439,7 @@ window.addEventListener("message", (event) => {
                 showShortcut();
                 break;
             case "confirm-quit-and-install":
+                console.log("Show Modal");
                 Swal.fire({
                     title: text.text_confirm_exit_and_install_the_application,
                     showCancelButton: true,

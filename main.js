@@ -117,6 +117,7 @@ autoUpdater.on("update-available", (info) => {
         }`,
         title: "Notifications",
     });
+
     autoUpdater.downloadUpdate();
 });
 
@@ -127,9 +128,12 @@ autoUpdater.on("error", (info) => {
 });
 autoUpdater.on("update-downloaded", () => {
     showNotification(
-        { title: "File Update Downloaded", body: "Please restart the application" },
-        () => {
-            WINDOWS.backgroundWindow.webContents.send("confirm-quit-and-install");
+        {
+            title: "File Update Downloaded",
+            body: "Please restart the application",
+        },
+        (event, arg) => {
+            WINDOWS.backgroundWindow.webContents.send("confirm-quit-and-install-from-main", true);
         }
     );
 });
