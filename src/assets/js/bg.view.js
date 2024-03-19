@@ -134,7 +134,7 @@ const changeStateVideo = () => {
 };
 //Mở memu lựa chọn video
 const showMenuChangeVideo = (state) => {
-    showMenuChangeVideo(false);
+    showMenu(false);
     if (state === true || state === undefined) {
         if (!document.querySelector(".change-video").classList.contains("active"))
             document.querySelector(".change-video").classList.add("active");
